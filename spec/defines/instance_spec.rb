@@ -178,7 +178,9 @@ describe 'tomcat::instance', :type => :define do
           "jmx_port"      => 8888,
         }
     end
-    it {}
+    it {
+      expect { should compile }.to raise_error(Puppet::Error, /Duplicate declaration: Tomcat::Port/)
+    }
   end
     
   #
