@@ -184,7 +184,99 @@ describe 'tomcat::instance', :type => :define do
       )
     }
   end
+
   # http_port
-  # unpack_wars
-  # autodeploy
+  context "http port set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 1234,
+        "shutdown_port" => 8088,
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+        /<Connector port="1234" protocol="HTTP\/1\.1"/
+      )
+    }
+  end
+
+  # unpack_wars true
+  context "unpack_wars = true set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "unpack_wars"   => true,
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+        /unpackWARs="true"/
+      )
+    }
+  end
+
+  # unpack_wars false
+  context "unpack_wars = false set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "unpack_wars"   => false,
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+        /unpackWARs="false"/
+      )
+    }
+  end
+
+  # autodeploy true
+  context "auto_deploy = true set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "auto_deploy"    => true,
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+        /autoDeploy="true"/
+      )
+    }
+  end
+
+  # autodeploy false
+  context "auto_deploy = false set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "auto_deploy"    => false,
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+        /autoDeploy="false"/
+      )
+    }
+  end
+
 end
