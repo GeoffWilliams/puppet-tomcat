@@ -20,16 +20,39 @@ define tomcat::instance($ensure = true,
                         $file_owner = "root",
                         $file_group = "root",
                         $templates = {
-                          "/bin/setenv.sh"   => "${module_name}/bin/setenv.sh.erb",
-                          "/bin/startup.sh"  => "${module_name}/bin/startup.sh.erb",
-                          "/bin/shutdown.sh" => "${module_name}/bin/shutdown.sh.erb",
-                          "/conf/server.xml"  => "${module_name}/conf/server.xml.erb",
-                          "/conf/catalina.properties" => "${module_name}/conf/catalina.properties.erb",
-                          "/conf/catalina.policy" => "${module_name}/conf/catalina.policy.erb",
-                          "/conf/context.xml" => "${module_name}/conf/context.xml.erb",
-                          "/conf/logging.properties" => "${module_name}/conf/logging.properties.erb",
-                          "/conf/tomcat-users.xml" => "${module_name}/conf/tomcat-users.xml.erb",
-                          "/conf/web.xml" => "${module_name}/conf/web.xml.erb",
+                          "/bin/setenv.sh"   => {
+                            "mode"     => "0755",
+                            "template" => "${module_name}/bin/setenv.sh.erb",
+                          },
+                          "/bin/startup.sh"  => {
+                            "mode"     => "0755",
+                            "template" => "${module_name}/bin/startup.sh.erb",
+                          },
+                          "/bin/shutdown.sh" => {
+                            "mode"     => "0755",
+                            "template" => "${module_name}/bin/shutdown.sh.erb",
+                          },
+                          "/conf/server.xml"  => {
+                            "template" => "${module_name}/conf/server.xml.erb",
+                          },
+                          "/conf/catalina.properties" => {
+                            "template" => "${module_name}/conf/catalina.properties.erb",
+                          },
+                          "/conf/catalina.policy" => {
+                            "template" => "${module_name}/conf/catalina.policy.erb",
+                          },
+                          "/conf/context.xml" => {
+                            "template" => "${module_name}/conf/context.xml.erb",
+                          },
+                          "/conf/logging.properties" => {
+                            "template" => "${module_name}/conf/logging.properties.erb",
+                          },
+                          "/conf/tomcat-users.xml" => {
+                              "template" => "${module_name}/conf/tomcat-users.xml.erb",
+                          },
+                          "/conf/web.xml" => {
+                            "template" => "${module_name}/conf/web.xml.erb",
+                          }
                         }) {
 
   # ensure ports are unique.  puppet takes care of this for us when we build 
