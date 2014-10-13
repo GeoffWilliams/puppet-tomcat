@@ -130,18 +130,18 @@ describe 'tomcat::instance', :type => :define do
   #
   # Directory structure
   #
-  instance_subdirs = ["bin",
-                      "common",
-                      "conf",
-                      "Catalina",
-                      "keystore",
-                      "lib",
-                      "logs",
-                      "server",
-                      "shared",
-                      "temp",
-                      "webapps",
-                      "work"]
+   instance_subdirs = [ "/bin",
+                        "/common",
+                        "/conf",
+                        "/Catalina",
+                        "/keystore",
+                        "/lib",
+                        "/logs",
+                        "/server",
+                        "/shared",
+                        "/temp",
+                        "/webapps",
+                        "/work"]
 
   instance_subdirs.each do | dir |
 
@@ -158,7 +158,7 @@ describe 'tomcat::instance', :type => :define do
       end
       it {
         should contain_file(
-          "/var/tomcat/instances/myapp/#{dir}",
+          "/var/tomcat/instances/myapp#{dir}",
         ).with(
           "ensure" => "directory",
         )
@@ -171,12 +171,12 @@ describe 'tomcat::instance', :type => :define do
       "myapp"
     end
     let :params do 
-        {
-          "http_port"     => 8888,
-          "shutdown_port" => 8888,
-          "https_port"    => 8888,
-          "jmx_port"      => 8888,
-        }
+      {
+        "http_port"     => 8888,
+        "shutdown_port" => 8888,
+        "https_port"    => 8888,
+        "jmx_port"      => 8888,
+      }
     end
     it {
       expect { should compile }.to raise_error(Puppet::Error, /Duplicate declaration: Tomcat::Port/)
@@ -186,14 +186,33 @@ describe 'tomcat::instance', :type => :define do
   #
   # Instance files (excludes init script - already checked)
   #
-  instance_files = [  "/var/tomcat/instances/myapp/bin/setenv.sh",
-                      "/var/tomcat/instances/myapp/bin/startup.sh",
-                      "/var/tomcat/instances/myapp/bin/shutdown.sh",
-                      "/var/tomcat/instances/myapp/conf/server.xml",
-                      "/var/tomcat/instances/myapp/conf/catalina.properties",
-                      "/var/tomcat/instances/myapp/conf/context.xml",
-                      "/var/tomcat/instances/myapp/conf/logging.properties",
-                      "/var/tomcat/instances/myapp/conf/tomcat-users.xml",
-                      "/var/tomcat/instances/myapp/conf/web.xml",
-]
+  instance_files = ["/var/tomcat/instances/myapp/bin/setenv.sh",
+                    "/var/tomcat/instances/myapp/bin/startup.sh",
+                    "/var/tomcat/instances/myapp/bin/shutdown.sh",
+                    "/var/tomcat/instances/myapp/conf/server.xml",
+                    "/var/tomcat/instances/myapp/conf/catalina.properties",
+                    "/var/tomcat/instances/myapp/conf/context.xml",
+                    "/var/tomcat/instances/myapp/conf/logging.properties",
+                    "/var/tomcat/instances/myapp/conf/tomcat-users.xml",
+                    "/var/tomcat/instances/myapp/conf/web.xml"]
+
+  instance_files.each do | file |
+    context "check file #{file} created" do
+
+      let :title do
+        "myapp"
+      end
+      let :params do
+        {
+          "http_port"     => 8080,
+          "shutdown_port" => 8088,
+        }
+      end
+      it { 
+        should contain_file(file).with(
+          "ensure" => "file",
+        )
+      }
+    end
+  end
 end
