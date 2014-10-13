@@ -4,46 +4,6 @@ describe 'tomcat::instance', :type => :define do
   #
   # service
   #
-  context "service ensure=>true; enable=>true" do
-    let :title do
-      "myapp"
-    end
-    let :params do 
-      {
-        "ensure"        => true,
-        "enable"        => true,
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").with(
-        "ensure" => true,
-        "enable" => true,
-      )
-    }
-  end
-    
-  context "service ensure=>true; enable=>true" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "ensure"        => true,
-        "enable"        => true,
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").with(
-        "ensure" => true,
-        "enable" => true,
-      )
-    }
-  end
-  
   context "service ensure=>false; enable=>true" do
     let :title do
       "myapp"
@@ -80,26 +40,6 @@ describe 'tomcat::instance', :type => :define do
       should contain_service("tomcat_myapp").with(
         "ensure" => true,
         "enable" => false,
-      )
-    }
-  end
-
-  context "service ensure=>false; enable=>false" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "ensure"        => true,
-        "enable"        => true,
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").with(
-        "ensure" => true,
-        "enable" => true,
       )
     }
   end
