@@ -1,4 +1,7 @@
 require 'spec_helper'
+
+instances = "/var/tomcat/instances"
+
 describe 'tomcat::instance', :type => :define do
 
   #
@@ -98,7 +101,7 @@ describe 'tomcat::instance', :type => :define do
       end
       it {
         should contain_file(
-          "/var/tomcat/instances/myapp#{dir}",
+          "#{instances}/myapp#{dir}",
         ).with(
           "ensure" => "directory",
         )
@@ -126,15 +129,15 @@ describe 'tomcat::instance', :type => :define do
   #
   # Instance files (excludes init script - already checked)
   #
-  instance_files = ["/var/tomcat/instances/myapp/bin/setenv.sh",
-                    "/var/tomcat/instances/myapp/bin/startup.sh",
-                    "/var/tomcat/instances/myapp/bin/shutdown.sh",
-                    "/var/tomcat/instances/myapp/conf/server.xml",
-                    "/var/tomcat/instances/myapp/conf/catalina.properties",
-                    "/var/tomcat/instances/myapp/conf/context.xml",
-                    "/var/tomcat/instances/myapp/conf/logging.properties",
-                    "/var/tomcat/instances/myapp/conf/tomcat-users.xml",
-                    "/var/tomcat/instances/myapp/conf/web.xml"]
+  instance_files = ["#{instances}/myapp/bin/setenv.sh",
+                    "#{instances}/myapp/bin/startup.sh",
+                    "#{instances}/myapp/bin/shutdown.sh",
+                    "#{instances}/myapp/conf/server.xml",
+                    "#{instances}/myapp/conf/catalina.properties",
+                    "#{instances}/myapp/conf/context.xml",
+                    "#{instances}/myapp/conf/logging.properties",
+                    "#{instances}/myapp/conf/tomcat-users.xml",
+                    "#{instances}/myapp/conf/web.xml"]
 
   instance_files.each do | file |
     context "check file #{file} created" do
@@ -155,4 +158,33 @@ describe 'tomcat::instance', :type => :define do
       }
     end
   end
+
+  # 
+  # Template file contents
+  # 
+
+  #
+  # server.xml
+  #
+
+  # shutdown
+  context "shutdown port set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 1234,
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+        /<Server port="1234" shutdown="SHUTDOWN">/
+      )
+    }
+  end
+  # http_port
+  # unpack_wars
+  # autodeploy
 end

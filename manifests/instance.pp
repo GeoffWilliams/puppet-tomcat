@@ -5,6 +5,8 @@ define tomcat::instance($ensure = true,
                         $jmx_port = false,
                         $shutdown_port,
                         $jmx_enabled = false,
+                        $unpack_wars = true,
+                        $autodeploy = true,
                         $instance_user = "tomcat",
                         $service_prefix = "tomcat",
                         $instance_root_dir = "/var/tomcat/instances",
@@ -138,7 +140,7 @@ define tomcat::instance($ensure = true,
 
   # Create each of the files from templates
   tomcat::template_file { $files:
-    templates    => $templates,
+    file_params  => $templates,
     file_key_map => $file_key_map,
   }
 
