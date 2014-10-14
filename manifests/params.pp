@@ -68,8 +68,8 @@ class tomcat::params {
   # default mode for init scripts
   $file_mode_init = "0755"
 
-  # Default mode for log directories (group writable)
-  $file_mode_log_dir = "0775"
+  # Default mode for writable directories (group writable)
+  $file_mode_group_write = "0775"
 
   # default owner for files
   $file_owner = "root"

@@ -22,17 +22,35 @@ export CATALINA_HOME="<%= @catalina_home %>"
 LAUNCH_SCRIPT="${CATALINA_HOME}/bin/catalina.sh"
 PROCESS_OWNER="<%= @instance_user %>"
 WHOAMI=$(whoami)
-
+export CATALINA_PID="<%= @instance_pid %>"
 WAIT_TO_DIE=60
 
 
 
-function start_instance {
+function start_instance() {
   $SU_CMD "$LAUNCH_SCRIPT start"
 }
 
-function stop_instance {
+function stop_instance() {
   $SU_CMD "$LAUNCH_SCRIPT stop ${WAIT_TO_DIE} -force"
+}
+
+function status_instance() {
+  if [ -f "$CATALINA_PID" ] ; then
+    TC_PROCESS=$(ps "$(cat $CATALINA_PID)")
+    PS_STATUS=$?
+    if [ "$PS_STATUS" -eq 0 ] ; then
+      STATUS=0
+      echo "Tomcat instance ${INSTANCE_NAME} running as process $(cat $CATALINA_PID)"
+    else
+      STATUS=127
+      echo "Tomcat instance ${INSTANCE_NAME} should be running as process $(cat $CATALINA_PID) but seems to have died"
+    fi
+  else
+    STATUS=1
+    echo "Tomcat instance ${INSTANCE_NAME} is not running"
+  fi
+  exit $STATUS
 }
 
 # check for root (needed to su)

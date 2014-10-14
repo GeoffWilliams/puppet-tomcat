@@ -17,7 +17,7 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
                         $pid_dir = $::tomcat::params::pid_dir,
                         $instance_root_dir = $::tomcat::params::instance_root_dir,
                         $instance_subdirs = $::tomcat::params::instance_subdirs,
-                        $file_mode_log_dir = $::tomcat::params::file_mode_log_dir,
+                        $file_mode_group_write = $::tomcat::params::file_mode_group_write,
                         $file_mode_regular = $::tomcat::params::file_mode_regular,
                         $file_mode_script = $::tomcat::params::file_mode_script,
                         $file_mode_init = $::tomcat::params::file_mode_init,
@@ -57,6 +57,14 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
       file { $::tomcat::params::log_dir:
         ensure => directory,
       }
+    }
+  }
+
+  if (! defined(File[$pid_dir])) {
+    file { $pid_dir:
+      ensure => directory,
+      group  => $instance_group,
+      mode   => $file_mode_group_write,
     }
   }
 
@@ -217,7 +225,7 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
   file { $_log_dir:
     ensure => directory,
     group  => $instance_group,
-    mode   => $file_mode_log_dir,
+    mode   => $file_mode_group_write,
   }
 
   # prefix the instance subdirs with the full path to this instance, then 
