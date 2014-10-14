@@ -24,6 +24,10 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
                         $file_owner = $::tomcat::params::file_owner,
                         $file_group = $::tomcat::params::file_group,
                         $major_version = $::tomcat::params::major_version,
+                        $shared_lib_dir = $::tomcat::params::shared_lib_dir,
+                        $shared_lib_trigger = $::tomcat::params::shared_lib_trigger,
+                        $server_xml_jdbc = "",
+                        $context_xml_jdbc = "",
                         $init_script_template = false,
                         $setenv_sh_template = false,
                         $server_xml_template = false,
@@ -211,7 +215,8 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
                     File[$context_xml_file],
                     File[$logging_properties_file],
                     File[$tomcat_users_xml_file],
-                    File[$web_xml_file], ]
+                    File[$web_xml_file], 
+                    File[$shared_lib_trigger],  ]
   }
 
   #
