@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-instances = "/var/tomcat/instances"
+instances = "/var/lib/tomcat"
 
 describe 'tomcat::instance', :type => :define do
 

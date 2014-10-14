@@ -1,0 +1,66 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides: <%= @service_name %>
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Tomcat instance for <%= @name %>
+# Description: Tomcat instance for <%= @name %>
+### END INIT INFO
+
+
+# chkconfig: 2345 95 20
+# description: Tomcat init script for <%= @name %>
+
+# PUPPET MANAGED, DO NOT EDIT!
+
+# Port number is combined with instance name so that 
+# we can see at a glance what ports should be running
+INSTANCE_NAME="<%= @instance_name %>"
+export CATALINA_BASE="<%= @instance_dir %>"
+export CATALINA_HOME="<%= @catalina_home %>"
+LAUNCH_SCRIPT="${CATALINA_HOME}/bin/catalina.sh"
+PROCESS_OWNER="<%= @instance_user %>"
+WHOAMI=$(whoami)
+
+WAIT_TO_DIE=60
+
+
+
+function start_instance {
+  $SU_CMD "$LAUNCH_SCRIPT start"
+}
+
+function stop_instance {
+  $SU_CMD "$LAUNCH_SCRIPT stop ${WAIT_TO_DIE} -force"
+}
+
+# check for root (needed to su)
+if [ $WHOAMI == "root" ] ; then
+  SU_CMD="su $PROCESS_OWNER -c "
+elif [ $WHOAMI == "$PROCESS_OWNER" ] ; then
+  SU_CMD=""
+else
+  echo "You must run this script as either root or ${PROCESS_OWNER}"
+  exit 1
+fi
+
+
+
+case "$1" in
+  'start')
+    start_instance
+  ;;
+  'stop')
+    stop_instance
+  ;;
+  'restart')
+    stop_instance
+    start_instance
+  ;;
+  'status')
+    status_instance
+  ;;
+  *)
+    echo "Usage $0 {start|stop|restart|status}"
+esac

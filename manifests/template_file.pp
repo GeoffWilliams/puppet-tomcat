@@ -21,7 +21,8 @@ define tomcat::template_file($file_params, $file_key_map) {
   # the passed in parameters MUST include a value for template so that
   # it can be passed to the template function when creating the file
   if (! has_key($raw_params_hash, "template")) {
-    fail("Must supply value for template in parameter has for ${template_key} in tomcat::instance")
+    notify { "raw hash $file_params": }
+#    fail("Must supply value for template in parameter '${key}' in tomcat::instance")
   }
 
   #
