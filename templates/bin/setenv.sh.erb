@@ -1,2 +1,7 @@
-# setenv.sh
-# <%= @instance_dir %>
+#!/bin/bash
+# 
+# Per-instance environment settings
+export JAVA_HOME="<%= @java_home %>"
+export JAVA_OPTS="<%= @java_opts %>"
+export CATALINA_OPTS="<%= @catalina_opts %>"
+export CATALINA_PID="<%= @instance_pid %>"

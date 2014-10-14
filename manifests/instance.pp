@@ -7,8 +7,12 @@ define tomcat::instance($ensure = true,
                         $jmx_enabled = false,
                         $unpack_wars = true,
                         $auto_deploy = true,
+                        $java_home = "/usr/java/default",
+                        $java_opts = "",
+                        $catalina_opts = "",
                         $instance_user = "tomcat",
                         $service_prefix = "tomcat",
+                        $pid_dir = "/var/run/tomcat",
                         $instance_root_dir = "/var/tomcat/instances",
                         $instance_subdirs = [ "/bin", 
                                               "/conf", 
@@ -39,9 +43,6 @@ define tomcat::instance($ensure = true,
                           },
                           "/conf/catalina.properties" => {
                             "template" => "${module_name}/conf/catalina.properties.erb",
-                          },
-                          "/conf/catalina.policy" => {
-                            "template" => "${module_name}/conf/catalina.policy.erb",
                           },
                           "/conf/context.xml" => {
                             "template" => "${module_name}/conf/context.xml.erb",
@@ -82,6 +83,7 @@ define tomcat::instance($ensure = true,
   $service_name = "${service_prefix}_${instance_name}"
   $init_script = "/etc/init.d/${service_name}"
   $instance_dir = "${instance_root_dir}/${instance_name}"
+  $instance_pid = "${pid_dir}/${instance_name}.pid"
 
   #
   # init script and service

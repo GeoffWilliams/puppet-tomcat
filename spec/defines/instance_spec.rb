@@ -250,7 +250,7 @@ describe 'tomcat::instance', :type => :define do
       {
         "http_port"     => 8080,
         "shutdown_port" => 8088,
-        "auto_deploy"    => true,
+        "auto_deploy"   => true,
       }
     end
     it {
@@ -278,5 +278,85 @@ describe 'tomcat::instance', :type => :define do
       )
     }
   end
+
+#
+# setenv.sh
+#
+
+# java_home
+  context "JAVA_HOME set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "java_home"     => "foobar",
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
+        /export JAVA_HOME="foobar"/
+      )
+    }
+  end
+
+# java_opts
+  context "JAVA_OPTS set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "java_opts"     => "foobar",
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
+        /export JAVA_OPTS="foobar"/
+      )
+    }
+  end
+
+# catalina_opts
+  context "CATALINA_OPTS set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "catalina_opts" => "foobar",
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
+        /export CATALINA_OPTS="foobar"/
+      )
+    }
+  end
+
+# catalina_pid
+  context "CATALINA_PID set correctly in template" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
+        /export CATALINA_PID="\/var\/run\/tomcat\/myapp.pid"/
+      )
+    }
+  end
+
 
 end
