@@ -48,8 +48,11 @@ class tomcat::params {
   # where to store logs
   $log_dir = "/var/log/tomcat"
 
-  $shared_lib_dir = "/usr/local/lib/tomcat"
+  $shared_lib_dir = "/usr/local/lib/tomcat_shared"
   $shared_lib_trigger = "${shared_lib_dir}/trigger.txt"
+
+  $endorsed_lib_dir = "/usr/local/lib/tomcat_endorsed"
+  $endorsed_lib_trigger = "${endorsed_lib_dir}/trigger.txt"
 
   # file for catalina.out (stdout/stderr) logging
   $catalina_out = "catalina.out"

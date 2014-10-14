@@ -26,6 +26,8 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
                         $major_version = $::tomcat::params::major_version,
                         $shared_lib_dir = $::tomcat::params::shared_lib_dir,
                         $shared_lib_trigger = $::tomcat::params::shared_lib_trigger,
+                        $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir,
+                        $endorsed_lib_trigger = $::tomcat::params::endorsed_lib_trigger,
                         $server_xml_jdbc = "",
                         $context_xml_jdbc = "",
                         $init_script_template = false,
@@ -215,8 +217,9 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
                     File[$context_xml_file],
                     File[$logging_properties_file],
                     File[$tomcat_users_xml_file],
-                    File[$web_xml_file], 
-                    File[$shared_lib_trigger],  ]
+                    File[$web_xml_file],
+                    File[$shared_lib_trigger], 
+                    File[$endorsed_lib_trigger],  ]
   }
 
   #
