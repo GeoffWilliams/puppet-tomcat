@@ -201,16 +201,28 @@ describe 'tomcat::instance', :type => :define do
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" =>  /export CATALINA_PID="\/var\/run\/tomcat\/myapp\.pid"/,
     },
+    #
+    # server.xml
+    #
+    "shutdown port set correctly in template" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "http_port"     => 8080,
+        "shutdown_port" => 1234,
+      },
+      "regexp" => /<Server port="1234" shutdown="SHUTDOWN">/,
+    },
+    "http port set correctly in template" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "http_port"     => 1234,
+        "shutdown_port" => 8088,
+      },
+      "regexp" => /<Connector port="1234" protocol="HTTP\/1\.1"/,
+    }
   }
 
-
-
-  #
-  # server.xml
-  #
-
-
-
+  # process each test from the above hash
   tests.each do | test_name, test_data |
     context test_name do
       let :title do
@@ -227,47 +239,40 @@ describe 'tomcat::instance', :type => :define do
     end
   end
 
-
-
-
-
-
-
-  # shutdown
-  context "shutdown port set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 1234,
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-        /<Server port="1234" shutdown="SHUTDOWN">/
-      )
-    }
-  end
+#  context "shutdown port set correctly in template" do
+#    let :title do
+#      "myapp"
+#    end
+#    let :params do
+#      {
+#        "http_port"     => 8080,
+#        "shutdown_port" => 1234,
+#      }
+#    end
+#    it {
+#      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+#        /<Server port="1234" shutdown="SHUTDOWN">/
+#      )
+#    }
+#  end
 
   # http_port
-  context "http port set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 1234,
-        "shutdown_port" => 8088,
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-        /<Connector port="1234" protocol="HTTP\/1\.1"/
-      )
-    }
-  end
+#  context "http port set correctly in template" do
+#    let :title do
+#      "myapp"
+#    end
+#    let :params do
+#      {
+#        "http_port"     => 1234,
+#        "shutdown_port" => 8088,
+#      }
+#    end
+#    it {
+#      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+#        /<Connector port="1234" protocol="HTTP\/1\.1"/
+#      )
+#    }
+#  end
 
   # unpack_wars true
   context "unpack_wars = true set correctly in template" do
