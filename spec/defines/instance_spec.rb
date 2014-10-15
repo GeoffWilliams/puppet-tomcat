@@ -248,6 +248,13 @@ describe 'tomcat::instance', :type => :define do
       },
       "regexp" => /autoDeploy="false"/,
     },
+    "server_xml_jdbc set in template" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "server_xml_jdbc" => "<jdbc>",
+      },
+      "regexp" => /<jdbc>/,
+    },
 
     #
     # setenv.sh
