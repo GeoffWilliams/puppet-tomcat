@@ -308,6 +308,39 @@ describe 'tomcat::instance', :type => :define do
       "regexp" => 
         /4host-manager\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
     },
+    "1catalina.org.apache.juli.FileHandler.directory set via param" => {
+      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "params" => {
+        "log_dir" => "foobar",
+      },
+      "regexp" =>
+        /1catalina\.org\.apache\.juli\.FileHandler\.directory = foobar/,
+    },
+    "2localhost.org.apache.juli.FileHandler.directory set via param" => {
+      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "params" => {
+        "log_dir" => "foobar",
+      },
+      "regexp" =>
+        /2localhost\.org\.apache\.juli\.FileHandler\.directory = foobar/,
+    },
+    "3manager.org.apache.juli.FileHandler.directory set via param" => {
+      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "params" => {
+        "log_dir" => "foobar",
+      },
+      "regexp" =>
+        /3manager\.org\.apache\.juli\.FileHandler\.directory = foobar/,
+    },
+    "4host-manager.org.apache.juli.FileHandler.directory set via param" => {
+      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "params" => {
+        "log_dir" => "foobar",
+      },
+      "regexp" =>
+        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = foobar/,
+    },
+
 
     # skip tomcat-users.xml (no variables)
     # skip web.xml (no variables)
