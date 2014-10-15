@@ -3,6 +3,8 @@
 # Per-instance environment settings
 export JAVA_HOME="<%= @java_home %>"
 export JAVA_OPTS="<%= @java_opts %>"
+<% if @endorsed_lib_dir -%>
 export JAVA_ENDORSED_DIRS="<%= @endorsed_lib_dir %>"
+<% end -%>
 export CATALINA_OPTS="<%= @catalina_opts %>"
 export CATALINA_OUT="<%= @catalina_out %>"

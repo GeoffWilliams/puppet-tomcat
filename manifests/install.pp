@@ -35,8 +35,7 @@
 #
 # Copyright 2014 Your name here, unless otherwise noted.
 #
-define tomcat::install($ensure = present, 
-              $instance_root_dir = $::tomcat::params::instance_root_dir) {
+define tomcat::install( $ensure = present ) {
   include ::tomcat::params
 
   if ! defined(Class['tomcat']) {
@@ -45,17 +44,7 @@ define tomcat::install($ensure = present,
 
   $package = $title
 
-  
-
   package { $package:
     ensure => $ensure,
-  }
- 
-
-  # directory to hold the individual tomcat instances
-  if (! defined(File[$instance_root_dir])) { 
-    file { $instance_root_dir:
-      ensure => directory,
-    }
   }
 }
