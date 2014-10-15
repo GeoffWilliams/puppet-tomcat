@@ -274,6 +274,44 @@ describe 'tomcat::instance', :type => :define do
       "regexp" => /export CATALINA_OPTS="foobar"/,
     },
 
+    #
+    # context.xml
+    #
+    "jdbc xml fragment in template" => {
+      "file"   => "#{instances}/myapp/conf/context.xml",
+      "params" => {
+        "context_xml_jdbc" => "<jdbc>",
+      },
+      "regexp" => /<jdbc>/,
+    },
+
+    #
+    # logging.properties
+    #
+    "1catalina.org.apache.juli.FileHandler.directory set via default" => {
+      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "regexp" =>
+        /1catalina\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
+    },
+    "2localhost.org.apache.juli.FileHandler.directory set via default" => {
+      "file"   => "#{instances}/myapp/conf/logging.properties", 
+      "regexp" => 
+        /2localhost\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
+    },
+    "3manager.org.apache.juli.FileHandler.directory set via default" => {
+      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "regexp" => 
+        /3manager\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
+    },
+    "4host-manager.org.apache.juli.FileHandler.directory set via default" => {
+      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "regexp" => 
+        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
+    },
+
+    # skip tomcat-users.xml (no variables)
+    # skip web.xml (no variables)
+
   }
 
   # process each test from the above hash
@@ -292,70 +330,6 @@ describe 'tomcat::instance', :type => :define do
       }
     end
   end
-
-#
-#
-# setenv.sh
-#
-
-## java_home
-#  context "JAVA_HOME set correctly in template" do
-#    let :title do
-#      "myapp"
-#    end
-#    let :params do
-#      {
-#        "http_port"     => 8080,
-#        "shutdown_port" => 8088,
-#        "java_home"     => "foobar",
-#      }
-#    end
-#    it {
-#      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
-#        /export JAVA_HOME="foobar"/
-#      )
-#    }
-#  end
-#
-## java_opts
-#  context "JAVA_OPTS set correctly in template" do
-#    let :title do
-#      "myapp"
-#    end
-#    let :params do
-#      {
-#        "http_port"     => 8080,
-#        "shutdown_port" => 8088,
-#        "java_opts"     => "foobar",
-#      }
-#    end
-#    it {
-#      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
-#        /export JAVA_OPTS="foobar"/
-#      )
-#    }
-#  end
-#
-## catalina_opts
-#  context "CATALINA_OPTS set correctly in template" do
-#    let :title do
-#      "myapp"
-#    end
-#    let :params do
-#      {
-#        "http_port"     => 8080,
-#        "shutdown_port" => 8088,
-#        "catalina_opts" => "foobar",
-#      }
-#    end
-#    it {
-#      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
-#        /export CATALINA_OPTS="foobar"/
-#      )
-#    }
-#  end
-
-# catalina_pid
 
 
 end
