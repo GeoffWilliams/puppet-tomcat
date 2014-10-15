@@ -1,10 +1,15 @@
-define tomcat::instance($ensure = $::tomcat::params::ensure,
-                        $enable = $::tomcat::params::enable,
+define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
+                        $service_enable = $::tomcat::params::service_enable,
                         $https_port = $::tomcat::params::https_port,
+                        $https_attributes = $::tomcat::params::https_attributes,
                         $http_port,
+                        $ajp_port = $::tomcat::params::ajp_port,
                         $jmx_port = $::tomcat::params::jmx_port,
+                        $jmx_ssl = $::tomcat::params::jmx_ssl,
+                        $jmx_authenticate = $::tomcat::params::jmx_authenticate,
+                        $jmx_password = $::tomcat::params::jmx_password_file,
+                        $jmx_access_file = $::tomcat::params::jmx_access_file,
                         $shutdown_port,
-                        $jmx_enabled = $::tomcat::params::jmx_enabled,
                         $unpack_wars = $::tomcat::params::unpack_wars,
                         $auto_deploy = $::tomcat::params::auto_deploy,
                         $java_home = $::tomcat::params::java_home,
@@ -39,6 +44,7 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
                         $tomcat_users_xml_template = false,
                         $web_xml_template = false,
                         $log_dir = false,
+                        $additional_watched = [],
       ) { 
   include ::tomcat::params
 
@@ -173,6 +179,46 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
   $tomcat_users_xml_file = "${instance_dir}${tomcat_users_xml}"
   $web_xml_file = "${instance_dir}${web_xml}"
 
+  # build a big array of "watched resources" that will cause this service
+  # to reload if altered
+
+  # basic resources to watch - present in all instances
+  $basic_watched =  [  
+    File[$init_script_file],
+    File[$setenv_sh_file],
+    File[$server_xml_file],
+    File[$catalina_properties_file],
+    File[$context_xml_file],
+    File[$logging_properties_file],
+    File[$tomcat_users_xml_file],
+    File[$web_xml_file],
+  ]
+
+
+  # list of resources (trigger file) to watch if endorsed libs are in use
+  if ($endorsed_lib_dir) {
+    $endorsed_lib_dir_watched = [ 
+      File[$endorsed_lib_trigger],
+    ]
+  } else {
+    $endorsed_lib_dir_watched = []
+  }
+
+  # list of resources (trigger file) to watch if shared libs are in use
+  if ($shared_lib_dir) {
+    $shared_lib_dir_watched = [
+      File[$shared_lib_trigger]
+    ]
+  } else {
+    $shared_lib_dir_watched = []
+  }
+
+  # concatenate all the watched resources to one array
+  $lib_watched = concat($endorsed_lib_dir_watched, $shared_lib_dir_watched)
+  $instance_watched = concat($basic_watched, $lib_watched)
+  $watched = concat($instance_watched, $additional_watched)
+ 
+
 
 
   # ensure ports are unique.  puppet takes care of this for us when we build 
@@ -185,6 +231,10 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
   
   if ($jmx_port) {
     tomcat::port { $jmx_port: }
+  }
+
+  if ($ajp_port) {
+    tomcat::port { $ajp_port: }
   }
 
   tomcat::port{ [$http_port, $shutdown_port]: }
@@ -210,16 +260,7 @@ define tomcat::instance($ensure = $::tomcat::params::ensure,
   service { $service_name:
     ensure    => $ensure,
     enable    => $enable,
-    subscribe => [  File[$init_script_file],
-                    File[$setenv_sh_file],
-                    File[$server_xml_file],
-                    File[$catalina_properties_file],
-                    File[$context_xml_file],
-                    File[$logging_properties_file],
-                    File[$tomcat_users_xml_file],
-                    File[$web_xml_file],
-                    File[$shared_lib_trigger], 
-                    File[$endorsed_lib_trigger],  ]
+    subscribe => $watched,
   }
 
   #

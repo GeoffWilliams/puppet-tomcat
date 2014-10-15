@@ -85,19 +85,14 @@
          style configuration. When using the APR/native implementation, the
          OpenSSL style configuration is required as described in the APR/native
          documentation -->
-    <!--
-    <Connector port="8443" protocol="org.apache.coyote.http11.Http11Protocol"
-               maxThreads="150" SSLEnabled="true" scheme="https" secure="true"
-               clientAuth="false" sslProtocol="TLS" />
-    -->
+    <% if @https_port -%>
+    <Connector port="<%= @https_port %>" <%= @https_attributes %> />
+    <% end -%>
 
-    <!-- Define an AJP 1.3 Connector on port 8009 -->
-    <!-- 
-      FIXME AJP not supported yet.  HTTP connector usualy faster...
-    -->
-    <!--
-    <Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />
-    -->
+    <!-- Define an AJP 1.3 Connector if configured -->
+    <% if @ajp_port -%>
+    <Connector port="<%= @ajp_port %>" protocol="AJP/1.3" redirectPort="8443" />
+    <% end -%>
 
     <!-- An Engine represents the entry point (within Catalina) that processes
          every request.  The Engine implementation for Tomcat stand alone

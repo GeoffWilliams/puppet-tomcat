@@ -1,19 +1,28 @@
 class tomcat::params {
 
   # ensure the tomcat service (start/stop at boot)
-  $ensure = true
+  $service_ensure = true
 
   # enable the tomcat service (start/stop now)
-  $enable = true
+  $service_enable = true
+
+  $ajp_port = false
 
   # false or https port to open
   $https_port = false
 
+  $https_attributes = 'protocol="org.apache.coyote.http11.Http11Protocol" maxThreads="150" SSLEnabled="true" scheme="https" secure="true" clientAuth="false" sslProtocol="TLS"'
+
   # false or jmx port to open
   $jmx_port = false
 
-  # enable jmx
-  $jmx_enabled = false
+  $jmx_ssl = false
+  
+  $jmx_authenticate = false
+
+  $jmx_password_file = ""
+  
+  $jmx_access_file = ""
 
   # unpack .war files detected in /webapps
   $unpack_wars = true

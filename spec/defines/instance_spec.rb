@@ -16,10 +16,10 @@ describe 'tomcat::instance', :type => :define do
     end
     let :params do
       {
-        "ensure"        => false,
-        "enable"        => true,
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
+        "service_ensure" => false,
+        "service_enable" => true,
+        "http_port"      => 8080,
+        "shutdown_port"  => 8088,
       }
     end
     it {
@@ -36,10 +36,10 @@ describe 'tomcat::instance', :type => :define do
     end
     let :params do
       {
-        "ensure"        => true,
-        "enable"        => false,
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
+        "service_ensure" => true,
+        "service_enable" => false,
+        "http_port"      => 8080,
+        "shutdown_port"  => 8088,
       }
     end
     it {

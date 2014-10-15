@@ -6,5 +6,15 @@ export JAVA_OPTS="<%= @java_opts %>"
 <% if @endorsed_lib_dir -%>
 export JAVA_ENDORSED_DIRS="<%= @endorsed_lib_dir %>"
 <% end -%>
-export CATALINA_OPTS="<%= @catalina_opts %>"
+
+JMX_OPTS="\
+<% if @jmx_port -%>
+  -Dcom.sun.management.jmxremote.port=<%= @jmx_port %> \
+  -Dcom.sun.management.jmxremote.ssl=<%= @jmx_ssl %> \
+  -Dcom.sun.management.jmxremote.authenticate=<%= @jmx_authenticate %> \
+  -Dcom.sun.management.jmxremote.password.file=<%= @jmx_password_file %> \
+  -Dcom.sun.management.jmxremote.access.file=<%= @jmx_access_file %> \
+<% end -%>
+"
+export CATALINA_OPTS="<%= @catalina_opts %>$JMX_OPTS"
 export CATALINA_OUT="<%= @catalina_out %>"
