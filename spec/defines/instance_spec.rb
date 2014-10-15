@@ -3,6 +3,9 @@ require 'spec_helper'
 instances = "/var/lib/tomcat"
 
 describe 'tomcat::instance', :type => :define do
+  let :pre_condition do
+    'class { "tomcat": }'
+  end
 
   #
   # service
@@ -130,8 +133,6 @@ describe 'tomcat::instance', :type => :define do
   # Instance files (excludes init script - already checked)
   #
   instance_files = ["#{instances}/myapp/bin/setenv.sh",
-                    "#{instances}/myapp/bin/startup.sh",
-                    "#{instances}/myapp/bin/shutdown.sh",
                     "#{instances}/myapp/conf/server.xml",
                     "#{instances}/myapp/conf/catalina.properties",
                     "#{instances}/myapp/conf/context.xml",
@@ -162,10 +163,75 @@ describe 'tomcat::instance', :type => :define do
   # 
   # Template file contents
   # 
+  default_params = {
+    "http_port"     => 8080,
+    "shutdown_port" => 8088,
+  }
+  default_title = "myapp"
+
+  tests = {
+    #
+    # init script
+    #
+    "provides (chkconfig) set in template" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "regexp" => /# Provides: tomcat_myapp/,
+    },
+    "description (chkconfig) set in template" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "regexp" => /init script for myapp/,
+    },
+    "INSTANCE_NAME set in template" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "regexp" => /export INSTANCE_NAME="myapp"/,
+    },
+    "CATALINA_BASE set in template" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "regexp" => /export CATALINA_BASE="\/var\/lib\/tomcat\/myapp"/,
+    },
+    "CATALINA_HOME set in template" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "regexp" => /export CATALINA_HOME="\/usr\/local\/apache-tomcat-7\.0\.56"/,
+    },
+    "PROCESS_OWNER set in template" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "regexp" => /PROCESS_OWNER="tomcat"/,
+    },
+    "CATALINA_PID set in template" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "regexp" =>  /export CATALINA_PID="\/var\/run\/tomcat\/myapp\.pid"/,
+    },
+  }
+
+
 
   #
   # server.xml
   #
+
+
+
+  tests.each do | test_name, test_data |
+    context test_name do
+      let :title do
+        test_data["title"] ? test_data["title"] : default_title
+      end
+      let :params do
+        test_data["params"] ? test_data["params"] : default_params
+      end
+      it {
+        should contain_file(test_data["file"]).with_content(
+          test_data["regexp"]
+        )
+      }
+    end
+  end
+
+
+
+
+
+
 
   # shutdown
   context "shutdown port set correctly in template" do
@@ -341,22 +407,6 @@ describe 'tomcat::instance', :type => :define do
   end
 
 # catalina_pid
-  context "CATALINA_PID set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
-        /export CATALINA_PID="\/var\/run\/tomcat\/myapp.pid"/
-      )
-    }
-  end
 
 
 end

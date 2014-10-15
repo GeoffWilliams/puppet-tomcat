@@ -4,19 +4,14 @@
 # Provides: <%= @service_name %>
 # Default-Start: 2 3 4 5
 # Default-Stop: 0 1 6
-# Short-Description: Tomcat instance for <%= @name %>
-# Description: Tomcat instance for <%= @name %>
+# Description: Tomcat init script for <%= @name %>
 ### END INIT INFO
 
 
 # chkconfig: 2345 95 20
 # description: Tomcat init script for <%= @name %>
 
-# PUPPET MANAGED, DO NOT EDIT!
-
-# Port number is combined with instance name so that 
-# we can see at a glance what ports should be running
-INSTANCE_NAME="<%= @instance_name %>"
+export INSTANCE_NAME="<%= @instance_name %>"
 export CATALINA_BASE="<%= @instance_dir %>"
 export CATALINA_HOME="<%= @catalina_home %>"
 LAUNCH_SCRIPT="${CATALINA_HOME}/bin/catalina.sh"
