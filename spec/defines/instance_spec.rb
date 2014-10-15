@@ -207,7 +207,6 @@ describe 'tomcat::instance', :type => :define do
     "shutdown port set correctly in template" => {
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
-        "http_port"     => 8080,
         "shutdown_port" => 1234,
       },
       "regexp" => /<Server port="1234" shutdown="SHUTDOWN">/,
@@ -216,10 +215,37 @@ describe 'tomcat::instance', :type => :define do
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
         "http_port"     => 1234,
-        "shutdown_port" => 8088,
       },
       "regexp" => /<Connector port="1234" protocol="HTTP\/1\.1"/,
-    }
+    },
+    "unpack_wars = true set correctly in template" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "unpack_wars" => true,
+      },
+      "regexp" => /unpackWARs="true"/,
+    },
+    "unpack_wars = false set correctly in template" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "unpack_wars" => false,
+      },
+      "regexp" => /unpackWARs="false"/,
+    },
+    "auto_deploy = true set correctly in template" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "auto_deploy" => true,
+      },
+      "regexp" => /autoDeploy="true"/,
+    },
+    "auto_deploy = false set correctly in template" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "auto_deploy" => false,
+      },
+      "regexp" => /autoDeploy="false"/,
+    },
   }
 
   # process each test from the above hash
@@ -229,7 +255,7 @@ describe 'tomcat::instance', :type => :define do
         test_data["title"] ? test_data["title"] : default_title
       end
       let :params do
-        test_data["params"] ? test_data["params"] : default_params
+        default_params.merge(test_data["params"] ? test_data["params"] : {})
       end
       it {
         should contain_file(test_data["file"]).with_content(
@@ -239,117 +265,83 @@ describe 'tomcat::instance', :type => :define do
     end
   end
 
-#  context "shutdown port set correctly in template" do
+#
+#  # unpack_wars true
+#  context "unpack_wars = true set correctly in template" do
 #    let :title do
 #      "myapp"
 #    end
 #    let :params do
 #      {
 #        "http_port"     => 8080,
-#        "shutdown_port" => 1234,
+#        "shutdown_port" => 8088,
+#        "unpack_wars"   => true,
 #      }
 #    end
 #    it {
 #      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-#        /<Server port="1234" shutdown="SHUTDOWN">/
+#        /unpackWARs="true"/
 #      )
 #    }
 #  end
-
-  # http_port
-#  context "http port set correctly in template" do
+#
+#  # unpack_wars false
+#  context "unpack_wars = false set correctly in template" do
 #    let :title do
 #      "myapp"
 #    end
 #    let :params do
 #      {
-#        "http_port"     => 1234,
+#        "http_port"     => 8080,
 #        "shutdown_port" => 8088,
+#        "unpack_wars"   => false,
 #      }
 #    end
 #    it {
 #      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-#        /<Connector port="1234" protocol="HTTP\/1\.1"/
+#        /unpackWARs="false"/
 #      )
 #    }
 #  end
-
-  # unpack_wars true
-  context "unpack_wars = true set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-        "unpack_wars"   => true,
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-        /unpackWARs="true"/
-      )
-    }
-  end
-
-  # unpack_wars false
-  context "unpack_wars = false set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-        "unpack_wars"   => false,
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-        /unpackWARs="false"/
-      )
-    }
-  end
-
-  # autodeploy true
-  context "auto_deploy = true set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-        "auto_deploy"   => true,
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-        /autoDeploy="true"/
-      )
-    }
-  end
-
-  # autodeploy false
-  context "auto_deploy = false set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-        "auto_deploy"    => false,
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-        /autoDeploy="false"/
-      )
-    }
-  end
-
+#
+#  # autodeploy true
+#  context "auto_deploy = true set correctly in template" do
+#    let :title do
+#      "myapp"
+#    end
+#    let :params do
+#      {
+#        "http_port"     => 8080,
+#        "shutdown_port" => 8088,
+#        "auto_deploy"   => true,
+#      }
+#    end
+#    it {
+#      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+#        /autoDeploy="true"/
+#      )
+#    }
+#  end
+#
+#  # autodeploy false
+#  context "auto_deploy = false set correctly in template" do
+#    let :title do
+#      "myapp"
+#    end
+#    let :params do
+#      {
+#        "http_port"     => 8080,
+#        "shutdown_port" => 8088,
+#        "auto_deploy"    => false,
+#      }
+#    end
+#    it {
+#      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
+#        /autoDeploy="false"/
+#      )
+#    }
+#  end
+#
 #
 # setenv.sh
 #
