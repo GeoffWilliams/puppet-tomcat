@@ -255,6 +255,32 @@ describe 'tomcat::instance', :type => :define do
       },
       "regexp" => /<jdbc>/,
     },
+    "https_port (custom/on)" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "https_port" => "4444",
+      },
+      "regexp" => /<Connector port="4444"/,
+    },
+    "https_port (custom attributes)" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "https_port"       => "4444",
+        "https_attributes" => "foobar",
+      },
+      "regexp" => /<Connector port="4444" foobar \/>/,
+    },
+    "ajp_port (default/off)" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "inv_regexp" => /protocol="AJP\/1\.3"/,
+    },
+    "ajp_port (custom/on)" => {
+      "file"   => "#{instances}/myapp/conf/server.xml",
+      "params" => {
+        "ajp_port" => "8888",
+      },
+      "regexp" => /<Connector port="8888" protocol="AJP\/1\.3" redirectPort="8443" \/>/,
+    },
 
     #
     # setenv.sh
