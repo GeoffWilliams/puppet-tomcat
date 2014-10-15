@@ -170,6 +170,7 @@ describe 'tomcat::instance', :type => :define do
   default_title = "myapp"
 
   tests = {
+
     #
     # init script
     #
@@ -201,6 +202,7 @@ describe 'tomcat::instance', :type => :define do
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" =>  /export CATALINA_PID="\/var\/run\/tomcat\/myapp\.pid"/,
     },
+
     #
     # server.xml
     #
@@ -246,6 +248,32 @@ describe 'tomcat::instance', :type => :define do
       },
       "regexp" => /autoDeploy="false"/,
     },
+
+    #
+    # setenv.sh
+    #
+    "JAVA_HOME set correctly in template" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "java_home" => "foobar",
+      },
+      "regexp" => /export JAVA_HOME="foobar"/,
+    },
+    "JAVA_OPTS set correctly in template" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "java_opts" => "foobar",
+      },
+      "regexp" => /export JAVA_OPTS="foobar"/,
+    },
+    "CATALINA_OPTS set correctly in template" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "catalina_opts" => "foobar",
+      },
+      "regexp" => /export CATALINA_OPTS="foobar"/,
+    },
+
   }
 
   # process each test from the above hash
@@ -266,142 +294,66 @@ describe 'tomcat::instance', :type => :define do
   end
 
 #
-#  # unpack_wars true
-#  context "unpack_wars = true set correctly in template" do
-#    let :title do
-#      "myapp"
-#    end
-#    let :params do
-#      {
-#        "http_port"     => 8080,
-#        "shutdown_port" => 8088,
-#        "unpack_wars"   => true,
-#      }
-#    end
-#    it {
-#      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-#        /unpackWARs="true"/
-#      )
-#    }
-#  end
-#
-#  # unpack_wars false
-#  context "unpack_wars = false set correctly in template" do
-#    let :title do
-#      "myapp"
-#    end
-#    let :params do
-#      {
-#        "http_port"     => 8080,
-#        "shutdown_port" => 8088,
-#        "unpack_wars"   => false,
-#      }
-#    end
-#    it {
-#      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-#        /unpackWARs="false"/
-#      )
-#    }
-#  end
-#
-#  # autodeploy true
-#  context "auto_deploy = true set correctly in template" do
-#    let :title do
-#      "myapp"
-#    end
-#    let :params do
-#      {
-#        "http_port"     => 8080,
-#        "shutdown_port" => 8088,
-#        "auto_deploy"   => true,
-#      }
-#    end
-#    it {
-#      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-#        /autoDeploy="true"/
-#      )
-#    }
-#  end
-#
-#  # autodeploy false
-#  context "auto_deploy = false set correctly in template" do
-#    let :title do
-#      "myapp"
-#    end
-#    let :params do
-#      {
-#        "http_port"     => 8080,
-#        "shutdown_port" => 8088,
-#        "auto_deploy"    => false,
-#      }
-#    end
-#    it {
-#      should contain_file("#{instances}/myapp/conf/server.xml").with_content(
-#        /autoDeploy="false"/
-#      )
-#    }
-#  end
-#
 #
 # setenv.sh
 #
 
-# java_home
-  context "JAVA_HOME set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-        "java_home"     => "foobar",
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
-        /export JAVA_HOME="foobar"/
-      )
-    }
-  end
-
-# java_opts
-  context "JAVA_OPTS set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-        "java_opts"     => "foobar",
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
-        /export JAVA_OPTS="foobar"/
-      )
-    }
-  end
-
-# catalina_opts
-  context "CATALINA_OPTS set correctly in template" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-        "catalina_opts" => "foobar",
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
-        /export CATALINA_OPTS="foobar"/
-      )
-    }
-  end
+## java_home
+#  context "JAVA_HOME set correctly in template" do
+#    let :title do
+#      "myapp"
+#    end
+#    let :params do
+#      {
+#        "http_port"     => 8080,
+#        "shutdown_port" => 8088,
+#        "java_home"     => "foobar",
+#      }
+#    end
+#    it {
+#      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
+#        /export JAVA_HOME="foobar"/
+#      )
+#    }
+#  end
+#
+## java_opts
+#  context "JAVA_OPTS set correctly in template" do
+#    let :title do
+#      "myapp"
+#    end
+#    let :params do
+#      {
+#        "http_port"     => 8080,
+#        "shutdown_port" => 8088,
+#        "java_opts"     => "foobar",
+#      }
+#    end
+#    it {
+#      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
+#        /export JAVA_OPTS="foobar"/
+#      )
+#    }
+#  end
+#
+## catalina_opts
+#  context "CATALINA_OPTS set correctly in template" do
+#    let :title do
+#      "myapp"
+#    end
+#    let :params do
+#      {
+#        "http_port"     => 8080,
+#        "shutdown_port" => 8088,
+#        "catalina_opts" => "foobar",
+#      }
+#    end
+#    it {
+#      should contain_file("#{instances}/myapp/bin/setenv.sh").with_content(
+#        /export CATALINA_OPTS="foobar"/
+#      )
+#    }
+#  end
 
 # catalina_pid
 
