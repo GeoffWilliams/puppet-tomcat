@@ -259,26 +259,138 @@ describe 'tomcat::instance', :type => :define do
     #
     # setenv.sh
     #
-    "JAVA_HOME set correctly in template" => {
+    "JAVA_HOME (custom)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "regexp" => /export JAVA_HOME="\/usr\/java\/default"/,
+    },
+    "JAVA_HOME (custom)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
       "params" => {
         "java_home" => "foobar",
       },
       "regexp" => /export JAVA_HOME="foobar"/,
     },
-    "JAVA_OPTS set correctly in template" => {
+    "JAVA_OPTS (default)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "regexp" => /export JAVA_OPTS=""/,
+    },
+    "JAVA_OPTS (custom)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
       "params" => {
         "java_opts" => "foobar",
       },
       "regexp" => /export JAVA_OPTS="foobar"/,
     },
-    "CATALINA_OPTS set correctly in template" => {
+    "CATALINA_OUT (default)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "regexp" => /export CATALINA_OUT="\/var\/log\/tomcat\/myapp\/catalina\.out"/,
+    },
+    "CATALINA_OUT (custom log_dir)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "log_dir" => "foobar",
+      },
+      "regexp" => /export CATALINA_OUT="foobar\/catalina\.out"/,
+    },
+    "CATALINA_OPTS_JMX (defalt off)" => {
+      "file"       => "#{instances}/myapp/bin/setenv.sh",
+      "inv_regexp" => /CATALINA_OPTS_JMX="/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.port (custom/active)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port" => 6666,
+      },
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.port=6666/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.ssl (default off)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port" => 6666,
+      },
+      "regexp" => /-Dcom.sun.management.jmxremote.ssl=false/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.ssl (custom on)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port" => 6666,
+        "jmx_ssl"  => true,
+      },
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.ssl=true/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.authenticate (default off)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port"          => 6666,
+      },
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.authenticate=false/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.authenticate (default off)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port"          => 6666,
+        "jmx_authenticate"  => true,
+      },
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.authenticate=true/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.password.file (default blank)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port" => 6666,
+      },
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.password\.file= \\$/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.password.file (custom)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port"          => 6666,
+        "jmx_password_file" => "foobar",
+      },
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.password\.file=foobar/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.access.file (default blank)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port" => 6666,
+      },
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.access\.file= \\$/,
+    },
+    "CATALINA_OPTS_JMX jmxremote.access.file (custom)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "jmx_port"          => 6666,
+        "jmx_access_file" => "foobar",
+      },
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.access\.file=foobar/,
+    },
+    "CATALINA_OPTS (default)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "regexp" => /CATALINA_OPTS_CFG=""/,
+    },
+    "CATALINA_OPTS (custom)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
       "params" => {
         "catalina_opts" => "foobar",
       },
-      "regexp" => /export CATALINA_OPTS="foobar"/,
+      "regexp" => /CATALINA_OPTS_CFG="foobar"/,
+    },
+    "JAVA_ENDORSED_DIRS (default on)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "regexp" => /export JAVA_ENDORSED_DIRS="\/usr\/local\/lib\/tomcat_endorsed"/,
+    },
+    "JAVA_ENDORSED_DIRS (set off)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "endorsed_lib_dir" => false,
+      },
+      "inv_regexp" => /export JAVA_ENDORSED_DIRS/,
+    },
+    "JAVA_ENDORSED_DIRS (set custom)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "endorsed_lib_dir" => "foobar",
+      },
+      "regexp" => /export JAVA_ENDORSED_DIRS="foobar"/,
     },
 
     #
@@ -364,9 +476,20 @@ describe 'tomcat::instance', :type => :define do
         default_params.merge(test_data["params"] ? test_data["params"] : {})
       end
       it {
-        should contain_file(test_data["file"]).with_content(
-          test_data["regexp"]
-        )
+        if test_data.has_key?("regexp") 
+          # test regexp present
+          should contain_file(test_data["file"]).with_content(
+            test_data["regexp"]
+          )
+        elsif test_data.has_key?("inv_regexp")
+          # test regexp not present
+          should contain_file(test_data["file"]).without_content(
+            test_data["inv_regexp"]
+          )
+        else
+          # test fail - nothing to test
+          fail("missing regexp/inv_regexp for test: #{test_name}")
+        end
       }
     end
   end

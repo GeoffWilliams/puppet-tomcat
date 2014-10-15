@@ -2,6 +2,6 @@ fixtures:
   forge_modules:
     staging:
       repo: "puppetlabs-stdlib"
-      ref: "3.0.0"
+      ref: "4.1.0"
   symlinks:
     tomcat: "#{source_dir}"

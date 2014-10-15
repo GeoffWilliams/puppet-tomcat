@@ -7,7 +7,7 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $jmx_port = $::tomcat::params::jmx_port,
                         $jmx_ssl = $::tomcat::params::jmx_ssl,
                         $jmx_authenticate = $::tomcat::params::jmx_authenticate,
-                        $jmx_password = $::tomcat::params::jmx_password_file,
+                        $jmx_password_file = $::tomcat::params::jmx_password_file,
                         $jmx_access_file = $::tomcat::params::jmx_access_file,
                         $shutdown_port,
                         $unpack_wars = $::tomcat::params::unpack_wars,
@@ -258,8 +258,8 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   }
 
   service { $service_name:
-    ensure    => $ensure,
-    enable    => $enable,
+    ensure    => $service_ensure,
+    enable    => $service_enable,
     subscribe => $watched,
   }
 
