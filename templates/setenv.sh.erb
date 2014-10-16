@@ -28,3 +28,5 @@ export CATALINA_OPTS="\
 <% if @endorsed_lib_dir -%>
 export JAVA_ENDORSED_DIRS="<%= @endorsed_lib_dir %>"
 <% end -%>
+
+<%= @tomcat_extra_setenv_args %>

@@ -28,6 +28,19 @@ class tomcat ($shared_lib_dir = $::tomcat::params::shared_lib_dir,
   }
 
 
+  #
+  # Trigger files:
+  # These files are set ensure=>absent and are "watched" by subscribing to them.
+  # If we decided that some action needs to be taken, we have an exec {} touch
+  # the trigger file BEFORE the trigger file is processed by puppet, this causes 
+  # puppet to remove the file and notify the subscribers.
+  #
+  # this technique is used to restart all tomcat instances on a node if a 
+  # shared or endorsed is altered
+  #
+  # In a nutshell: if something (exec) creates a trigger file, puppet will 
+  # remove it and then restart all tomcat instances
+
   # shared lib dir and trigger file if shared libraries in use
   if ($shared_lib_dir) {
     file { $shared_lib_dir:

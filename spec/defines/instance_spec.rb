@@ -447,6 +447,13 @@ describe 'tomcat::instance', :type => :define do
       },
       "regexp" => /export JAVA_ENDORSED_DIRS="\/foobar"/,
     },
+    "tomcat_extra_setenv (set)" => {
+      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "params" => {
+        "tomcat_extra_setenv_args" => "foobar",
+      },
+      "regexp" => /^foobar$/,
+    },
 
     #
     # context.xml
@@ -538,6 +545,13 @@ describe 'tomcat::instance', :type => :define do
       },
       "regexp" =>
         /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\/foobar,\/foobar\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
+    },
+    "catalina_properties_extra_args (custom)" => {
+      "file"   => "#{instances}/myapp/conf/catalina.properties",
+      "params" => {
+        "catalina_properties_extra_args" => "foobar",
+      },
+      "regexp" => /^foobar$/,
     },
 
     # skip tomcat-users.xml (no variables)

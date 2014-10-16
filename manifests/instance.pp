@@ -44,6 +44,8 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $web_xml_template = false,
                         $log_dir = false,
                         $additional_watched = [],
+                        $catalina_properties_extra_args = "",
+                        $tomcat_extra_setenv_args = "",
       ) { 
   include ::tomcat::params
 
@@ -88,6 +90,8 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   }
 
   validate_array($additional_watched)
+  validate_string($catalina_properties_extra_args)
+  validate_string($tomcat_extra_setenv_args)
 
 
   $instance_name = $title
