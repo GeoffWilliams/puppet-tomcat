@@ -2,12 +2,12 @@ define tomcat::library( $ensure = present,
                         $download_site,
                         $endorsed = false,
                         $shared_lib_dir = $::tomcat::params::shared_lib_dir,
-                        $shared_lib_trigger = $::tomcat::params::shared_lib_trigger,
-                        $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir,
-                        $endorsed_lib_trigger = $::tomcat::params::endorsed_lib_trigger,) {
+                        $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir, ) { 
   $filename = $title
   $download_url = "${download_site}/${filename}"
   $trigger_title = "trigger_${filename}"
+  $shared_lib_trigger = "${shared_lib_dir}/${::tomcat::params::trigger_file}"
+  $endorsed_lib_trigger = "${endorsed_lib_dir}/${::tomcat::params::trigger_file}"
 
   if ($endorsed) {
     $local_file = "${endorsed_lib_dir}/$filename"
