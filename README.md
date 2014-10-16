@@ -1,4 +1,5 @@
 # tomcat
+[![Build Status](https://travis-ci.org/GeoffWilliams/puppet-tomcat.svg?branch=master)](https://travis-ci.org/GeoffWilliams/puppet-tomcat)
 
 #### Table of Contents
 
