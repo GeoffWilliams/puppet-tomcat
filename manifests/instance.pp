@@ -19,7 +19,6 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $instance_user = $::tomcat::params::instance_user,
                         $pid_file = false,
                         $instance_root_dir = $::tomcat::params::instance_root_dir,
-                        $instance_subdirs = $::tomcat::params::instance_subdirs,
                         $file_mode_regular = $::tomcat::params::file_mode_regular,
                         $file_mode_script = $::tomcat::params::file_mode_script,
                         $file_mode_init = $::tomcat::params::file_mode_init,
@@ -51,6 +50,10 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
     fail('You must include the tomcat base class before using any tomcat defined resources')
   }
 
+  $instance_group = $instance_user
+  $instance_subdirs_ro = $::tomcat::params::instance_subdirs_ro
+  $instance_subdirs_rw = $::tomcat::params::instance_subdirs_rw
+
   # parameter validation
   validate_bool($service_ensure)
   validate_bool($service_enable)
@@ -69,7 +72,6 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   validate_string($instance_user)
   validate_string($instance_group)
   validate_absolute_path($instance_root_dir)
-  validate_array($instance_subdirs)
   validate_string($file_owner)
   validate_string($file_group)
   if ($pid_file) {
@@ -99,24 +101,34 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   $instance_dir = "${instance_root_dir}/${instance_name}"
   $xml_validate_command = $::tomcat::params::xml_validate_command
 
+  # choose the PID file and logging directories for this instance.  If
+  # user has specified something this will be used instead of the defaults. If
+  # overriden, writable directories will still be created but never written to 
+  # when we process the instance_subdirs_rw array.
+  #
+  # The PID file to use gets defined in the init script 
+  #
+  # The logging directory to use gets defined in logging.propperties and 
+  # setenv.sh
+  #
+  # If user specified a location of either of these locations, they must ensure
+  # any required directories exist themselves.
+
+  # $_pid_file -- absolute path to PID file for this instance
   if ($pid_file) {
-    $instance_pid = $pid_file
+    $_pid_file = $pid_file
   } else {
-    $instance_pid = "${instance_dir}/run/${instance_name}.pid"
+    $_pid_file = 
+      "${instance_dir}/${::tomcat::params::pid_dir}/${instance_name}.pid"
   }
   
+  # $_log_dir -- absolute path to log directory for this instance
   if ($log_dir) {
     $_log_dir = $log_dir
   } else {
-    $_log_dir = "${::tomcat::params::log_dir}/${instance_name}"
-    
-    # make parent logdir here if needed
-    if (! defined(File[$::tomcat::params::log_dir])) {
-      file { $::tomcat::params::log_dir:
-        ensure => directory,
-      }
-    }
+    $_log_dir = "${instance_dir}/${::tomcat::params::log_dir}"
   }
+
 
   $catalina_out = "${_log_dir}/${::tomcat::params::catalina_out}"
 
@@ -312,20 +324,21 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
     ensure => directory,
   }
 
-  # log directory (needs to be writable by GROUP of tomcat process)
-  file { $_log_dir:
+  # prefix the instance subdirs with the full path to this instance, then 
+  # create them all as file resources.  Prefix() function comes from stdlib
+  # see reference: https://forge.puppetlabs.com/puppetlabs/stdlib/readme#prefix
+  $_instance_subdirs_ro = prefix($instance_subdirs_ro, $instance_dir)
+  $_instance_subdirs_rw = prefix($instance_subdirs_rw, $instance_dir)
+  file { $_instance_subdirs_ro:
+    ensure => directory,
+  }
+
+  file { $_instance_subdirs_rw:
     ensure => directory,
     owner  => $instance_user,
     group  => $instance_group,
   }
 
-  # prefix the instance subdirs with the full path to this instance, then 
-  # create them all as file resources.  Prefix() function comes from stdlib
-  # see reference: https://forge.puppetlabs.com/puppetlabs/stdlib/readme#prefix
-  $_instance_subdirs = prefix($instance_subdirs, $instance_dir)
-  file { $_instance_subdirs:
-    ensure => directory,
-  }
 
   #
   # Files from templates

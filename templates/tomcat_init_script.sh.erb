@@ -17,7 +17,7 @@ export CATALINA_HOME="<%= @catalina_home %>"
 LAUNCH_SCRIPT="${CATALINA_HOME}/bin/catalina.sh"
 PROCESS_OWNER="<%= @instance_user %>"
 WHOAMI=$(whoami)
-export CATALINA_PID="<%= @instance_pid %>"
+export CATALINA_PID="<%= @_pid_file %>"
 WAIT_TO_DIE=60
 
 

@@ -3,12 +3,16 @@ require 'spec_helper'
 instances = "/var/lib/tomcat"
 catalina_home = "/usr/local/apache-tomcat-7.0.56"
 def_file_owner = "root"
-def_file_group = "root"
+def_file_group = "tomcat"
+def_instance_user = "tomcat"
+def_instance_group = def_instance_user
 def_file_mode_regular = "0640"
 def_file_mode_script = "0750"
 def_file_mode_init = "0755"
 custom_file_owner = "tomcat_user"
 custom_file_group = "tomcat_group"
+custom_instance_user = "tomcat_instance_user"
+custom_instance_group = custom_instance_user
 custom_file_mode_regular = "0600"
 custom_file_mode_script  = "0700"
 custom_file_mode_init = "0740"
@@ -63,7 +67,7 @@ describe 'tomcat::instance', :type => :define do
   end
 
   #
-  # Files:  Owners/groups/permissions
+  # Files and directories:  Owners/groups/permissions
   #
   context "owners/groups/permissions (default)" do
     let :title do
@@ -88,6 +92,9 @@ describe 'tomcat::instance', :type => :define do
       should contain_file("#{instances}/myapp/bin/setenv.sh").with(
         "ensure" => "file",
         "owner"  => def_file_owner,
+        # needs group set to the owner of the tomcat process so the file
+        # can be read and executed but advise against making it world readable
+        # by default incase proxy passwords, etc are stored in here...
         "group"  => def_file_group,
         "mode"   => def_file_mode_script,
       )
@@ -140,6 +147,68 @@ describe 'tomcat::instance', :type => :define do
         "mode"   => def_file_mode_regular,
       )
 
+      # /bin (ro)
+      should contain_file("#{instances}/myapp/bin").with(
+        "ensure" => "directory",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # /conf (ro)
+      should contain_file("#{instances}/myapp/conf").with(
+        "ensure" => "directory",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # /lib (ro)
+      should contain_file("#{instances}/myapp/lib").with(
+        "ensure" => "directory",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # /logs (rw)
+      should contain_file("#{instances}/myapp/logs").with(
+        "ensure" => "directory",
+        "owner"  => def_instance_user,
+        "group"  => def_instance_user,
+        "mode"   => def_file_mode_regular,
+      )
+      # /run (rw)
+      should contain_file("#{instances}/myapp/run").with(
+        "ensure" => "directory",
+        "owner"  => def_instance_user,
+        "group"  => def_instance_user,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # /temp (rw)
+      should contain_file("#{instances}/myapp/temp").with(
+        "ensure" => "directory",
+        "owner"  => def_instance_user,
+        "group"  => def_instance_user,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # /webapps (rw)
+      should contain_file("#{instances}/myapp/webapps").with(
+        "ensure" => "directory",
+        "owner"  => def_instance_user,
+        "group"  => def_instance_user,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # /work (rw)
+      should contain_file("#{instances}/myapp/work").with(
+        "ensure" => "directory",
+        "owner"  => def_instance_user,
+        "group"  => def_instance_user,
+        "mode"   => def_file_mode_regular,
+      )
     }
   end
   context "owners/groups/permissions (custom)" do
@@ -152,6 +221,7 @@ describe 'tomcat::instance', :type => :define do
         "shutdown_port"     => 8088,
         "file_owner"        => custom_file_owner,
         "file_group"        => custom_file_group,
+        "instance_user"     => custom_instance_user,
         "file_mode_init"    => custom_file_mode_init,
         "file_mode_regular" => custom_file_mode_regular,
         "file_mode_script"  => custom_file_mode_script,
@@ -223,80 +293,75 @@ describe 'tomcat::instance', :type => :define do
         "mode"   => custom_file_mode_regular,
       )
 
+      # /bin (ro)
+      should contain_file("#{instances}/myapp/bin").with(
+        "ensure" => "directory",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
 
+      # /conf (ro)
+      should contain_file("#{instances}/myapp/conf").with(
+        "ensure" => "directory",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # /lib (ro)
+      should contain_file("#{instances}/myapp/lib").with(
+        "ensure" => "directory",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # /logs (rw)
+      should contain_file("#{instances}/myapp/logs").with(
+        "ensure" => "directory",
+        "owner"  => custom_instance_user,
+        "group"  => custom_instance_group,
+        "mode"   => custom_file_mode_regular,
+      )
+      # /run (rw)
+      should contain_file("#{instances}/myapp/run").with(
+        "ensure" => "directory",
+        "owner"  => custom_instance_user,
+        "group"  => custom_instance_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # /temp (rw)
+      should contain_file("#{instances}/myapp/temp").with(
+        "ensure" => "directory",
+        "owner"  => custom_instance_user,
+        "group"  => custom_instance_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # /webapps (rw)
+      should contain_file("#{instances}/myapp/webapps").with(
+        "ensure" => "directory",
+        "owner"  => custom_instance_user,
+        "group"  => custom_instance_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # /work (rw)
+      should contain_file("#{instances}/myapp/work").with(
+        "ensure" => "directory",
+        "owner"  => custom_instance_user,
+        "group"  => custom_instance_group,
+        "mode"   => custom_file_mode_regular,
+      )
     }
   end
 
+
   #
-  # Directory structure
+  # duplicate tcp port protection
   #
-  instance_subdirs = [ "/bin",
-                        "/common",
-                        "/conf",
-                        "/Catalina",
-                        "/keystore",
-                        "/lib",
-                        "/logs",
-                        "/server",
-                        "/shared",
-                        "/temp",
-                        "/webapps",
-                        "/work"]
-
-  instance_subdirs.each do | dir |
-
-    context "instance subdir '#{dir}' (default)" do
-      let :title do
-        "myapp"
-      end
-      let :params do
-        {
-          "instance_subdirs" => instance_subdirs,
-          "http_port"        => 8080,
-          "shutdown_port"    => 8088,
-        }
-      end
-      it {
-        should contain_file(
-          "#{instances}/myapp#{dir}",
-        ).with(
-          "ensure" => "directory",
-          "owner"  => def_file_owner,
-          "group"  => def_file_group,
-          # the AGENT adds the '1' to the mode so its still in the catalogue as
-          # a regular file permission
-          "mode"   => def_file_mode_regular,
-        )
-      }
-    end
-
-    context "instance subdir '#{dir}' (custom)" do
-      let :title do
-        "myapp"
-      end
-      let :params do
-        {
-          "instance_subdirs"  => instance_subdirs,
-          "http_port"         => 8080,
-          "shutdown_port"     => 8088,
-          "file_owner"        => custom_file_owner,
-          "file_group"        => custom_file_group,
-          "file_mode_regular" => custom_file_mode_regular,
-        }
-      end
-      it {
-        should contain_file(
-          "#{instances}/myapp#{dir}",
-        ).with(
-          "ensure" => "directory",
-          "owner"  => custom_file_owner,
-          "group"  => custom_file_group,
-          "mode"   => custom_file_mode_regular,
-        )
-      }
-    end
-  end
-
   context "failure on attempt to reallocate used tcp port" do
     let :title do
       "myapp"
@@ -522,7 +587,7 @@ describe 'tomcat::instance', :type => :define do
     },
     "CATALINA_OUT (default)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
-      "regexp" => /export CATALINA_OUT="\/var\/log\/tomcat\/myapp\/catalina\.out"/,
+      "regexp" => /export CATALINA_OUT="#{instances}\/myapp\/logs\/catalina\.out"/,
     },
     "CATALINA_OUT (custom log_dir)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
@@ -656,22 +721,22 @@ describe 'tomcat::instance', :type => :define do
     "1catalina.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "regexp" =>
-        /1catalina\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
+        /1catalina\.org\.apache\.juli\.FileHandler\.directory = #{instances}\/myapp\/logs/,
     },
     "2localhost.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties", 
       "regexp" => 
-        /2localhost\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
+        /2localhost\.org\.apache\.juli\.FileHandler\.directory = #{instances}\/myapp\/logs/,
     },
     "3manager.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "regexp" => 
-        /3manager\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
+        /3manager\.org\.apache\.juli\.FileHandler\.directory = #{instances}\/myapp\/logs/,
     },
     "4host-manager.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "regexp" => 
-        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
+        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = #{instances}\/myapp\/logs/,
     },
     "1catalina.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",

@@ -48,9 +48,6 @@ class tomcat::params {
   # prefix to apply to init scripts eg, "tomcat_" to create tomcat_myinstance
   $service_prefix = "tomcat_"
 
-  # where to store logs
-  $log_dir = "/var/log/tomcat"
-
   $shared_lib_dir = "/usr/local/lib/tomcat_shared"
   $shared_lib_trigger = "${shared_lib_dir}/trigger"
 
@@ -63,14 +60,19 @@ class tomcat::params {
   # directory to build tomcat instance's ($CATALINA_BASE's) under
   $instance_root_dir = "/var/lib/tomcat"
 
+
   # List of directories to create for each tomcat instance
-  $instance_subdirs = [ "/bin",
-                        "/conf", 
-                        "/lib",
-                        "/run", 
-                        "/temp", 
-                        "/webapps", 
-                        "/work"]
+  $instance_subdirs_ro = ["/bin",
+                          "/conf", 
+                          "/lib", ]
+
+  $log_dir = "logs"
+  $pid_dir = "run"
+  $instance_subdirs_rw = ["/${log_dir}",
+                          "/${pid_dir}",
+                          "/temp",
+                          "/work",
+                          "/webapps", ]
 
   # Default mode for regular files.  be default, do not allow files to be world
   # readlable as they may contain passwords in xml files, etc
@@ -86,7 +88,7 @@ class tomcat::params {
   $file_owner = "root"
 
   # default group for files
-  $file_group = "root"
+  $file_group = "tomcat"
 
   # subdirectory within 'templates' to find tomcat 7 config files
   $tc7_templates = "tc7"
