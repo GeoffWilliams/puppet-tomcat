@@ -67,6 +67,26 @@ describe 'tomcat::instance', :type => :define do
   end
 
   #
+  # major version
+  # 
+  context "fail on invalid major version" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"      => 8080,
+        "shutdown_port"  => 8088,
+        "major_version"  => "x",
+      }
+    end
+    it {
+      expect { subject }.to raise_error(/module doesn't support major version/)
+    }
+  end
+
+
+  #
   # Files and directories:  Owners/groups/permissions
   #
   context "owners/groups/permissions (default)" do
