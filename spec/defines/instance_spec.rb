@@ -230,7 +230,7 @@ describe 'tomcat::instance', :type => :define do
   #
   # Directory structure
   #
-   instance_subdirs = [ "/bin",
+  instance_subdirs = [ "/bin",
                         "/common",
                         "/conf",
                         "/Catalina",
@@ -245,7 +245,7 @@ describe 'tomcat::instance', :type => :define do
 
   instance_subdirs.each do | dir |
 
-    context "instance subdir '#{dir}' created" do
+    context "instance subdir '#{dir}' (default)" do
       let :title do
         "myapp"
       end
@@ -261,6 +261,37 @@ describe 'tomcat::instance', :type => :define do
           "#{instances}/myapp#{dir}",
         ).with(
           "ensure" => "directory",
+          "owner"  => def_file_owner,
+          "group"  => def_file_group,
+          # the AGENT adds the '1' to the mode so its still in the catalogue as
+          # a regular file permission
+          "mode"   => def_file_mode_regular,
+        )
+      }
+    end
+
+    context "instance subdir '#{dir}' (custom)" do
+      let :title do
+        "myapp"
+      end
+      let :params do
+        {
+          "instance_subdirs"  => instance_subdirs,
+          "http_port"         => 8080,
+          "shutdown_port"     => 8088,
+          "file_owner"        => custom_file_owner,
+          "file_group"        => custom_file_group,
+          "file_mode_regular" => custom_file_mode_regular,
+        }
+      end
+      it {
+        should contain_file(
+          "#{instances}/myapp#{dir}",
+        ).with(
+          "ensure" => "directory",
+          "owner"  => custom_file_owner,
+          "group"  => custom_file_group,
+          "mode"   => custom_file_mode_regular,
         )
       }
     end
