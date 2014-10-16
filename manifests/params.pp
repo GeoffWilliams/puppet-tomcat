@@ -72,11 +72,12 @@ class tomcat::params {
                         "/webapps", 
                         "/work"]
 
-  # Default mode for regular files
-  $file_mode_regular = "0644"
+  # Default mode for regular files.  be default, do not allow files to be world
+  # readlable as they may contain passwords in xml files, etc
+  $file_mode_regular = "0640"
 
   # default mode for scripts
-  $file_mode_script = "0755"
+  $file_mode_script = "0750"
 
   # default mode for init scripts
   $file_mode_init = "0755"

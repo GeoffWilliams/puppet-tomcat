@@ -2,6 +2,17 @@ require 'spec_helper'
 
 instances = "/var/lib/tomcat"
 catalina_home = "/usr/local/apache-tomcat-7.0.56"
+def_file_owner = "root"
+def_file_group = "root"
+def_file_mode_regular = "0640"
+def_file_mode_script = "0750"
+def_file_mode_init = "0755"
+custom_file_owner = "tomcat_user"
+custom_file_group = "tomcat_group"
+custom_file_mode_regular = "0600"
+custom_file_mode_script  = "0700"
+custom_file_mode_init = "0740"
+
 
 describe 'tomcat::instance', :type => :define do
   let :pre_condition do
@@ -52,11 +63,9 @@ describe 'tomcat::instance', :type => :define do
   end
 
   #
-  # Owners/groups/permissions
+  # Files:  Owners/groups/permissions
   #
-
-  # init script
-  context "init script permissions (default)" do
+  context "owners/groups/permissions (default)" do
     let :title do
       "myapp"
     end
@@ -67,25 +76,85 @@ describe 'tomcat::instance', :type => :define do
       }
     end
     it {
+      # init script
       should contain_file("/etc/init.d/tomcat_myapp").with(
         "ensure" => "file",
-        "owner"  => "root",
-        "group"  => "root",
-        "mode"   => "0755",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_init,
       )
+
+      # setenv.sh
+      should contain_file("#{instances}/myapp/bin/setenv.sh").with(
+        "ensure" => "file",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_script,
+      )
+      
+      # catalina.properties
+      should contain_file("#{instances}/myapp/conf/catalina.properties").with(
+        "ensure" => "file",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # context.xml
+      should contain_file("#{instances}/myapp/conf/context.xml").with(
+        "ensure" => "file",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+      
+      # logging.properties
+      should contain_file("#{instances}/myapp/conf/logging.properties").with(
+        "ensure" => "file",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # server.xml
+      should contain_file("#{instances}/myapp/conf/server.xml").with(
+        "ensure" => "file",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # tomcat-users.xml
+      should contain_file("#{instances}/myapp/conf/tomcat-users.xml").with(
+        "ensure" => "file",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+
+      # web.xml
+      should contain_file("#{instances}/myapp/conf/web.xml").with(
+        "ensure" => "file",
+        "owner"  => def_file_owner,
+        "group"  => def_file_group,
+        "mode"   => def_file_mode_regular,
+      )
+
     }
   end
-  context "init script permissions (custom)" do
+  context "owners/groups/permissions (custom)" do
     let :title do
       "myapp"
     end
     let :params do
       {
-        "http_port"      => 8080,
-        "shutdown_port"  => 8088,
-        "file_owner"     => "tomcat",
-        "file_group"     => "tomcat",
-        "file_mode_init" => "0750",
+        "http_port"         => 8080,
+        "shutdown_port"     => 8088,
+        "file_owner"        => custom_file_owner,
+        "file_group"        => custom_file_group,
+        "file_mode_init"    => custom_file_mode_init,
+        "file_mode_regular" => custom_file_mode_regular,
+        "file_mode_script"  => custom_file_mode_script,
       }
     end
     it {
@@ -93,57 +162,70 @@ describe 'tomcat::instance', :type => :define do
       # don't allow user to have init scripts owned by non-root
       should contain_file("/etc/init.d/tomcat_myapp").with(
         "ensure" => "file",
-        "owner"  => "root",
-        "group"  => "tomcat",
-        "mode"   => "0750",
+        "owner"  => def_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_init,
       )
-    }
-  end
-  
-  # setenv.sh
-  context "setenv permissions (default)" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"     => 8080,
-        "shutdown_port" => 8088,
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/bin/setenv.sh").with(
-        "ensure" => "file",
-        "owner"  => "root",
-        "group"  => "root",
-        "mode"   => "0755",
-      )
-    }
-  end
-  context "setenv permissions (custom)" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"        => 8080,
-        "shutdown_port"    => 8088,
-        "file_mode_script" => "0700",
-        "file_owner"       => "tomcat",
-        "file_group"       => "tomcat",
-      }
-    end
-    it {
-      should contain_file("#{instances}/myapp/bin/setenv.sh").with(
-        "ensure" => "file",
-        "owner"  => "tomcat",
-        "group"  => "tomcat",
-        "mode"   => "0700",
-      )
-    }
-  end
 
-  
+      # setenv.sh
+      should contain_file("#{instances}/myapp/bin/setenv.sh").with(
+        "ensure" => "file",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_script,
+      )
+
+      # catalina.properties
+      should contain_file("#{instances}/myapp/conf/catalina.properties").with(
+        "ensure" => "file",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # context.xml
+      should contain_file("#{instances}/myapp/conf/context.xml").with(
+        "ensure" => "file",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # logging.properties
+      should contain_file("#{instances}/myapp/conf/logging.properties").with(
+        "ensure" => "file",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # server.xml
+      should contain_file("#{instances}/myapp/conf/server.xml").with(
+        "ensure" => "file",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # tomcat-users.xml
+      should contain_file("#{instances}/myapp/conf/tomcat-users.xml").with(
+        "ensure" => "file",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+      # web.xml
+      should contain_file("#{instances}/myapp/conf/web.xml").with(
+        "ensure" => "file",
+        "owner"  => custom_file_owner,
+        "group"  => custom_file_group,
+        "mode"   => custom_file_mode_regular,
+      )
+
+
+    }
+  end
 
   #
   # Directory structure
