@@ -190,6 +190,13 @@ describe 'tomcat::instance', :type => :define do
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" => /export CATALINA_BASE="\/var\/lib\/tomcat\/myapp"/,
     },
+    "CATALINA_BASE (custom)" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "params" => {
+        "instance_root_dir" => "/home/tomcat",
+      },
+      "regexp" => /export CATALINA_BASE="\/home\/tomcat\/myapp"/,
+    },
     "CATALINA_HOME (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" => /export CATALINA_HOME="\/usr\/local\/apache-tomcat-7\.0\.56"/,
@@ -212,9 +219,20 @@ describe 'tomcat::instance', :type => :define do
       },
       "regexp" => /PROCESS_OWNER="foobar"/,
     },
-    "CATALINA_PID set in template" => {
+    "CATALINA_PID (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" =>  /export CATALINA_PID="#{instances}\/myapp\/run\/myapp\.pid"/,
+    },
+    "CATALINA_PID (default)" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "regexp" =>  /export CATALINA_PID="#{instances}\/myapp\/run\/myapp\.pid"/,
+    },
+    "CATALINA_PID (custom)" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "params" => {
+        "pid_file" => "/foobar",
+      },
+      "regexp" =>  /export CATALINA_PID="\/foobar"/,
     },
 
     #
