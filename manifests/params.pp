@@ -75,6 +75,9 @@ class tomcat::params {
   # Default mode for regular files
   $file_mode_regular = "0644"
 
+  # default mode for scripts
+  $file_mode_script = "0755"
+
   # default mode for init scripts
   $file_mode_init = "0755"
 

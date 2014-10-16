@@ -52,8 +52,10 @@ describe 'tomcat::instance', :type => :define do
   end
 
   #
-  # init script
+  # Owners/groups/permissions
   #
+
+  # init script
   context "init script permissions (default)" do
     let :title do
       "myapp"
@@ -97,6 +99,51 @@ describe 'tomcat::instance', :type => :define do
       )
     }
   end
+  
+  # setenv.sh
+  context "setenv permissions (default)" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/bin/setenv.sh").with(
+        "ensure" => "file",
+        "owner"  => "root",
+        "group"  => "root",
+        "mode"   => "0755",
+      )
+    }
+  end
+  context "setenv permissions (custom)" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"        => 8080,
+        "shutdown_port"    => 8088,
+        "file_mode_script" => "0700",
+        "file_owner"       => "tomcat",
+        "file_group"       => "tomcat",
+      }
+    end
+    it {
+      should contain_file("#{instances}/myapp/bin/setenv.sh").with(
+        "ensure" => "file",
+        "owner"  => "tomcat",
+        "group"  => "tomcat",
+        "mode"   => "0700",
+      )
+    }
+  end
+
+  
 
   #
   # Directory structure
