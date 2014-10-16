@@ -835,6 +835,33 @@ describe 'tomcat::instance', :type => :define do
       }
     end
   end
+  
+  #
+  # custom templates
+  #
+  template_param_name = [ "init_script_template", 
+                          "setenv_sh_template",
+                          "server_xml_template",
+                          "catalina_properties_template",
+                          "tomcat_users_xml_template",
+                          "web_xml_template",]
 
+
+  # test that each custom template is usable by attempting to load from a 
+  # non-existant template and checking that the requested template name shows
+  # up in the missing template file error message we expect
+  template_param_name.each do | param_name |
+    context "test custom template via #{param_name}" do
+      let :title do
+        default_title
+      end
+      let :params do 
+        default_params.merge({param_name => "/not_here"})
+      end
+      it {
+        expect { subject }.to raise_error(/No such file or directory - \/not_here/)
+      }
+    end
+  end
 
 end
