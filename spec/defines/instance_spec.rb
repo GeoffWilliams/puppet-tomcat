@@ -182,25 +182,39 @@ describe 'tomcat::instance', :type => :define do
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" => /init script for myapp/,
     },
-    "INSTANCE_NAME set in template" => {
+    "INSTANCE_NAME (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" => /export INSTANCE_NAME="myapp"/,
     },
-    "CATALINA_BASE set in template" => {
+    "CATALINA_BASE (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" => /export CATALINA_BASE="\/var\/lib\/tomcat\/myapp"/,
     },
-    "CATALINA_HOME set in template" => {
+    "CATALINA_HOME (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" => /export CATALINA_HOME="\/usr\/local\/apache-tomcat-7\.0\.56"/,
     },
-    "PROCESS_OWNER set in template" => {
+    "CATALINA_HOME (custom)" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "params" => {
+        "catalina_home" => "/foobar",
+      },
+      "regexp" => /export CATALINA_HOME="\/foobar"/,
+    },
+    "PROCESS_OWNER (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" => /PROCESS_OWNER="tomcat"/,
     },
+    "PROCESS_OWNER (custom)" => {
+      "file"   => "/etc/init.d/tomcat_myapp",
+      "params" => {
+        "instance_user" => "foobar",
+      },
+      "regexp" => /PROCESS_OWNER="foobar"/,
+    },
     "CATALINA_PID set in template" => {
       "file"   => "/etc/init.d/tomcat_myapp",
-      "regexp" =>  /export CATALINA_PID="\/var\/run\/tomcat\/myapp\.pid"/,
+      "regexp" =>  /export CATALINA_PID="#{instances}\/myapp\/run\/myapp\.pid"/,
     },
 
     #
@@ -292,9 +306,9 @@ describe 'tomcat::instance', :type => :define do
     "JAVA_HOME (custom)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
       "params" => {
-        "java_home" => "foobar",
+        "java_home" => "/foobar",
       },
-      "regexp" => /export JAVA_HOME="foobar"/,
+      "regexp" => /export JAVA_HOME="\/foobar"/,
     },
     "JAVA_OPTS (default)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
@@ -314,9 +328,9 @@ describe 'tomcat::instance', :type => :define do
     "CATALINA_OUT (custom log_dir)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
       "params" => {
-        "log_dir" => "foobar",
+        "log_dir" => "/foobar",
       },
-      "regexp" => /export CATALINA_OUT="foobar\/catalina\.out"/,
+      "regexp" => /export CATALINA_OUT="\/foobar\/catalina\.out"/,
     },
     "CATALINA_OPTS_JMX (defalt off)" => {
       "file"       => "#{instances}/myapp/bin/setenv.sh",
@@ -370,9 +384,9 @@ describe 'tomcat::instance', :type => :define do
       "file"   => "#{instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port"          => 6666,
-        "jmx_password_file" => "foobar",
+        "jmx_password_file" => "/foobar",
       },
-      "regexp" => /-Dcom\.sun\.management\.jmxremote\.password\.file=foobar/,
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.password\.file=\/foobar/,
     },
     "CATALINA_OPTS_JMX jmxremote.access.file (default blank)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
@@ -385,9 +399,9 @@ describe 'tomcat::instance', :type => :define do
       "file"   => "#{instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port"          => 6666,
-        "jmx_access_file" => "foobar",
+        "jmx_access_file" => "/foobar",
       },
-      "regexp" => /-Dcom\.sun\.management\.jmxremote\.access\.file=foobar/,
+      "regexp" => /-Dcom\.sun\.management\.jmxremote\.access\.file=\/foobar/,
     },
     "CATALINA_OPTS (default)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
@@ -414,9 +428,9 @@ describe 'tomcat::instance', :type => :define do
     "JAVA_ENDORSED_DIRS (set custom)" => {
       "file"   => "#{instances}/myapp/bin/setenv.sh",
       "params" => {
-        "endorsed_lib_dir" => "foobar",
+        "endorsed_lib_dir" => "/foobar",
       },
-      "regexp" => /export JAVA_ENDORSED_DIRS="foobar"/,
+      "regexp" => /export JAVA_ENDORSED_DIRS="\/foobar"/,
     },
 
     #
@@ -456,34 +470,34 @@ describe 'tomcat::instance', :type => :define do
     "1catalina.org.apache.juli.FileHandler.directory set via param" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "params" => {
-        "log_dir" => "foobar",
+        "log_dir" => "/foobar",
       },
       "regexp" =>
-        /1catalina\.org\.apache\.juli\.FileHandler\.directory = foobar/,
+        /1catalina\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
     "2localhost.org.apache.juli.FileHandler.directory set via param" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "params" => {
-        "log_dir" => "foobar",
+        "log_dir" => "/foobar",
       },
       "regexp" =>
-        /2localhost\.org\.apache\.juli\.FileHandler\.directory = foobar/,
+        /2localhost\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
     "3manager.org.apache.juli.FileHandler.directory set via param" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "params" => {
-        "log_dir" => "foobar",
+        "log_dir" => "/foobar",
       },
       "regexp" =>
-        /3manager\.org\.apache\.juli\.FileHandler\.directory = foobar/,
+        /3manager\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
     "4host-manager.org.apache.juli.FileHandler.directory set via param" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "params" => {
-        "log_dir" => "foobar",
+        "log_dir" => "/foobar",
       },
       "regexp" =>
-        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = foobar/,
+        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
 
 

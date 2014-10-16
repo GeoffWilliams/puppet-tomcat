@@ -18,8 +18,7 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $catalina_opts = $::tomcat::params::catalina_opts,
                         $instance_user = $::tomcat::params::instance_user,
                         $instance_group = $::tomcat::params::instance_group,
-                        $service_prefix = $::tomcat::params::service_prefix,
-                        $pid_dir = $::tomcat::params::pid_dir,
+                        $pid_file = false,
                         $instance_root_dir = $::tomcat::params::instance_root_dir,
                         $instance_subdirs = $::tomcat::params::instance_subdirs,
                         $file_mode_group_write = $::tomcat::params::file_mode_group_write,
@@ -52,12 +51,57 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
     fail('You must include the tomcat base class before using any tomcat defined resources')
   }
 
+  # parameter validation
+  validate_bool($service_ensure)
+  validate_bool($service_enable)
+  validate_bool($jmx_ssl)
+  validate_bool($jmx_authenticate)
+  validate_bool($unpack_wars)
+  validate_bool($auto_deploy)
+  if ($jmx_port and $jmx_authenticate) {
+    validate_string($jmx_password_file)
+    validate_string($jmx_access_file)
+  }
+  validate_absolute_path($java_home)
+  validate_absolute_path($catalina_home)
+  validate_string($java_opts)
+  validate_string($catalina_opts)
+  validate_string($instance_user)
+  validate_string($instance_group)
+  validate_absolute_path($instance_root_dir)
+  validate_array($instance_subdirs)
+  validate_string($file_owner)
+  validate_string($file_group)
+  if ($pid_file) {
+    validate_absolute_path($pid_file)
+  } 
+  if ($log_dir) {
+    validate_absolute_path($log_dir)
+  }
+  if ($shared_lib_dir) {
+    validate_absolute_path($shared_lib_dir)
+    validate_absolute_path($shared_lib_trigger)
+  } 
+  if ($endorsed_lib_dir) {
+    validate_absolute_path($endorsed_lib_dir)
+    validate_absolute_path($endorsed_lib_trigger)
+  }
+
+  validate_array($additional_watched)
+
 
   $instance_name = $title
+  $service_prefix = $::tomcat::params::service_prefix
   $service_name = "${service_prefix}${instance_name}"
   $init_script_file = "/etc/init.d/${service_name}"
   $instance_dir = "${instance_root_dir}/${instance_name}"
-  $instance_pid = "${pid_dir}/${instance_name}.pid"
+  $xml_validate_command = $::tomcat::params::xml_validate_command
+
+  if ($pid_file) {
+    $instance_pid = $pid_file
+  } else {
+    $instance_pid = "${instance_dir}/run/${instance_name}.pid"
+  }
   
   if ($log_dir) {
     $_log_dir = $log_dir
@@ -69,14 +113,6 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
       file { $::tomcat::params::log_dir:
         ensure => directory,
       }
-    }
-  }
-
-  if (! defined(File[$pid_dir])) {
-    file { $pid_dir:
-      ensure => directory,
-      group  => $instance_group,
-      mode   => $file_mode_group_write,
     }
   }
 
@@ -298,8 +334,9 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   
   # server.xml
   file { $server_xml_file:
-    ensure  => file,
-    content => template($_server_xml_template),
+    ensure       => file,
+    content      => template($_server_xml_template),
+    validate_cmd => $xml_validate_command,
   }
 
   # catalina.properties
@@ -310,8 +347,9 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
 
   # context.xml
   file { $context_xml_file: 
-    ensure  => file,
-    content => template($_context_xml_template),
+    ensure       => file,
+    content      => template($_context_xml_template),
+    validate_cmd => $xml_validate_command,
   }
 
   # logging.properties
@@ -322,13 +360,15 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
 
   # tomcat-users.xml
   file { $tomcat_users_xml_file: 
-    ensure  => file,
-    content => template($_tomcat_users_xml_template),
+    ensure       => file,
+    content      => template($_tomcat_users_xml_template),
+    validate_cmd => $xml_validate_command,
   }
 
   file { $web_xml_file:
-    ensure  => file,
-    content => template($_web_xml_template),
+    ensure       => file,
+    content      => template($_web_xml_template),
+    validate_cmd => $xml_validate_command,
   }
 
 }

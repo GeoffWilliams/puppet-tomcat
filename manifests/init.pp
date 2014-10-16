@@ -14,6 +14,14 @@ class tomcat ($shared_lib_dir = $::tomcat::params::shared_lib_dir,
     mode  => $file_mode_regular,
   }
 
+
+  if (! defined(Package["libxml2"])) {
+    # install xmllint for validation
+    package { "libxml2": 
+      ensure => present
+    }
+  }
+
   # directory to hold the individual tomcat instances
   file { $instance_root_dir:
     ensure => directory,

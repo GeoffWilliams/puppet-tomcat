@@ -51,9 +51,6 @@ class tomcat::params {
   # prefix to apply to init scripts eg, "tomcat_" to create tomcat_myinstance
   $service_prefix = "tomcat_"
 
-  # directory to keep pid files
-  $pid_dir = "/var/run/tomcat"
-
   # where to store logs
   $log_dir = "/var/log/tomcat"
 
@@ -72,7 +69,8 @@ class tomcat::params {
   # List of directories to create for each tomcat instance
   $instance_subdirs = [ "/bin",
                         "/conf", 
-                        "/lib", 
+                        "/lib",
+                        "/run", 
                         "/temp", 
                         "/webapps", 
                         "/work"]
@@ -101,6 +99,8 @@ class tomcat::params {
   # major version of tomcat we are setting up (used to load the correct 
   # templates)
   $major_version = 7  
+
+  $xml_validate_command = "xmllint --noout %"
 
   # where to read the init script template from
   $init_script_template = "${module_name}/tomcat_init_script.sh.erb"
