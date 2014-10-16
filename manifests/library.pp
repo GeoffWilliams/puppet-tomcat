@@ -9,13 +9,19 @@ define tomcat::library( $ensure = present,
   $shared_lib_trigger = "${shared_lib_dir}/${::tomcat::params::trigger_file}"
   $endorsed_lib_trigger = "${endorsed_lib_dir}/${::tomcat::params::trigger_file}"
 
+
   if ($endorsed) {
+    validate_absolute_path($endorsed_lib_dir)
     $local_file = "${endorsed_lib_dir}/$filename"
     $trigger_file = $endorsed_lib_trigger
   } else {
+    validate_absolute_path($shared_lib_dir)
     $local_file = "${shared_lib_dir}/$filename"
     $trigger_file = $shared_lib_trigger
   }
+
+  # just incase someone passed a string with strange chars...
+  validate_absolute_path($local_file)
 
   if ($ensure == present) {
     staging::file { $filename:

@@ -9,6 +9,15 @@ class tomcat ($shared_lib_dir = $::tomcat::params::shared_lib_dir,
   $endorsed_lib_trigger = "${endorsed_lib_dir}/${::tomcat::params::trigger_file}"
   $shared_lib_trigger = "${shared_lib_dir}/${::tomcat::params::trigger_file}"
 
+  validate_absolute_path($instance_root_dir)
+
+  if ($shared_lib_dir) {
+    validate_absolute_path($shared_lib_dir)
+  }
+
+  if ($endorsed_lib_dir) {
+    validate_absolute_path($endorsed_lib_dir)
+  }
 
   File {
     owner => $file_owner,
