@@ -17,11 +17,9 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $java_opts = $::tomcat::params::java_opts,
                         $catalina_opts = $::tomcat::params::catalina_opts,
                         $instance_user = $::tomcat::params::instance_user,
-                        $instance_group = $::tomcat::params::instance_group,
                         $pid_file = false,
                         $instance_root_dir = $::tomcat::params::instance_root_dir,
                         $instance_subdirs = $::tomcat::params::instance_subdirs,
-                        $file_mode_group_write = $::tomcat::params::file_mode_group_write,
                         $file_mode_regular = $::tomcat::params::file_mode_regular,
                         $file_mode_script = $::tomcat::params::file_mode_script,
                         $file_mode_init = $::tomcat::params::file_mode_init,
@@ -317,8 +315,8 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   # log directory (needs to be writable by GROUP of tomcat process)
   file { $_log_dir:
     ensure => directory,
+    owner  => $instance_user,
     group  => $instance_group,
-    mode   => $file_mode_group_write,
   }
 
   # prefix the instance subdirs with the full path to this instance, then 

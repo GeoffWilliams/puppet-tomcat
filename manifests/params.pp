@@ -45,9 +45,6 @@ class tomcat::params {
   # system user to run tomcat as
   $instance_user = "tomcat"
 
-  # system group that $instance_user belongs to
-  $instance_group = "tomcat"
-
   # prefix to apply to init scripts eg, "tomcat_" to create tomcat_myinstance
   $service_prefix = "tomcat_"
 
@@ -55,10 +52,10 @@ class tomcat::params {
   $log_dir = "/var/log/tomcat"
 
   $shared_lib_dir = "/usr/local/lib/tomcat_shared"
-  $shared_lib_trigger = "${shared_lib_dir}/trigger.txt"
+  $shared_lib_trigger = "${shared_lib_dir}/trigger"
 
   $endorsed_lib_dir = "/usr/local/lib/tomcat_endorsed"
-  $endorsed_lib_trigger = "${endorsed_lib_dir}/trigger.txt"
+  $endorsed_lib_trigger = "${endorsed_lib_dir}/trigger"
 
   # file for catalina.out (stdout/stderr) logging
   $catalina_out = "catalina.out"
@@ -80,9 +77,6 @@ class tomcat::params {
 
   # default mode for init scripts
   $file_mode_init = "0755"
-
-  # Default mode for writable directories (group writable)
-  $file_mode_group_write = "0775"
 
   # default owner for files
   $file_owner = "root"

@@ -54,7 +54,7 @@ describe 'tomcat::instance', :type => :define do
   #
   # init script
   #
-  context "init script created" do
+  context "init script permissions (default)" do
     let :title do
       "myapp"
     end
@@ -70,6 +70,30 @@ describe 'tomcat::instance', :type => :define do
         "owner"  => "root",
         "group"  => "root",
         "mode"   => "0755",
+      )
+    }
+  end
+  context "init script permissions (custom)" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"      => 8080,
+        "shutdown_port"  => 8088,
+        "file_owner"     => "tomcat",
+        "file_group"     => "tomcat",
+        "file_mode_init" => "0750",
+      }
+    end
+    it {
+      # file should always be owned by root even if user set to tomcat. reason:
+      # don't allow user to have init scripts owned by non-root
+      should contain_file("/etc/init.d/tomcat_myapp").with(
+        "ensure" => "file",
+        "owner"  => "root",
+        "group"  => "tomcat",
+        "mode"   => "0750",
       )
     }
   end
