@@ -49,6 +49,7 @@ define tomcat::install( $ensure = present,
   # default tomcat installation by creating a symlink
   if ($symlink_target) {
     validate_absolute_path($symlink_target)
+    validate_absolute_path($symlink_source)
 
     file { $symlink_source:
       target => $symlink_target,
