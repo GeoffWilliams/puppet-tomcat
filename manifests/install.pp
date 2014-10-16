@@ -35,11 +35,24 @@
 #
 # Copyright 2014 Your name here, unless otherwise noted.
 #
-define tomcat::install( $ensure = present ) {
+define tomcat::install( $ensure = present,
+                        $symlink_source = $::tomcat::params::catalina_home,
+                        $symlink_target = false,) {
   include ::tomcat::params
 
   if ! defined(Class['tomcat']) {
     fail('You must include the tomcat base class before using any tomcat defined resources')
+  }
+  
+
+  # if user has supplied a valid target to symlink to, then make this the 
+  # default tomcat installation by creating a symlink
+  if ($symlink_target) {
+    validate_absolute_path($symlink_target)
+
+    file { $symlink_source:
+      target => $symlink_target,
+    }
   }
 
   $package = $title
@@ -47,4 +60,5 @@ define tomcat::install( $ensure = present ) {
   package { $package:
     ensure => $ensure,
   }
+
 }

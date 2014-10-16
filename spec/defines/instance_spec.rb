@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 instances = "/var/lib/tomcat"
-catalina_home = "/usr/local/apache-tomcat-7.0.56"
+catalina_home = "/usr/local/apache-tomcat"
 def_file_owner = "root"
 def_file_group = "tomcat"
 def_instance_user = "tomcat"

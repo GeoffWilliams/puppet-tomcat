@@ -34,7 +34,7 @@ class tomcat::params {
   $java_home = "/usr/java/default"
 
   # default directory to look for tomcat shared installation
-  $catalina_home = "/usr/local/apache-tomcat-7.0.56"
+  $catalina_home = "/usr/local/apache-tomcat"
 
   # additional options to pass to JDK when starting
   $java_opts = ""

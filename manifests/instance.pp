@@ -264,9 +264,28 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
     $shared_lib_cfg = ""
   }
 
+  # if we are running against java and tomcat symlinks/directories that are 
+  # puppet managed (not the same as packages installed by puppet!!), then we
+  # will add these files to the list of "watched" resources so that if they 
+  # are changed, puppet will restart tomcat for us.  This is good if (eg) we
+  # installed tomcat at /usr/local/apache-tomcat and upgraded by changing
+  # the symlink
+  if (defined(File[$catalina_home])) {
+    $tomcat_watched = [File[$catalina_home]]
+  } else {
+    $tomcat_watched = []
+  }
+  if (defined(File[$java_home])) {
+    $java_watched = [File[$java_home]]
+  } else {
+    $java_watched = []
+  }
+  $install_watched = concat($tomcat_watched, $java_watched)
+
   # concatenate all the watched resources to one array
   $lib_watched = concat($endorsed_lib_dir_watched, $shared_lib_dir_watched)
-  $watched = concat($basic_watched, $lib_watched)
+  $shared_watched = concat($lib_watched, $install_watched)
+  $watched = concat($basic_watched, $install_watched)
 
   # ensure ports are unique.  puppet takes care of this for us when we build 
   # the dependency graph.  Recall that type + title definitions must be unique 
