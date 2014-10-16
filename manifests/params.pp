@@ -48,7 +48,7 @@ class tomcat::params {
   # prefix to apply to init scripts eg, "tomcat_" to create tomcat_myinstance
   $service_prefix = "tomcat_"
 
-  $trigger_file = "/reload_tomcat"
+  $trigger_file = "reload_tomcat"
   $shared_lib_dir = "/usr/local/lib/tomcat_shared"
 
   $endorsed_lib_dir = "/usr/local/lib/tomcat_endorsed"
