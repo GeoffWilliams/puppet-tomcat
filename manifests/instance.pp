@@ -240,13 +240,17 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
     $endorsed_lib_dir_watched = []
   }
 
-  # list of resources (trigger file) to watch if shared libs are in use
+  # if shared libraries are in use, build the fragment to add to 
+  # catalina.properties and add the trigger file to the list of watched
+  # resources
   if ($shared_lib_dir) {
     $shared_lib_dir_watched = [
       File[$shared_lib_trigger]
     ]
+    $shared_lib_cfg = "${shared_lib_dir},${shared_lib_dir}/*.jar,"
   } else {
     $shared_lib_dir_watched = []
+    $shared_lib_cfg = ""
   }
 
   # concatenate all the watched resources to one array

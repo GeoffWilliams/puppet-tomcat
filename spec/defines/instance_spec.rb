@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 instances = "/var/lib/tomcat"
+catalina_home = "/usr/local/apache-tomcat-7.0.56"
 
 describe 'tomcat::instance', :type => :define do
   let :pre_condition do
@@ -188,7 +189,7 @@ describe 'tomcat::instance', :type => :define do
     },
     "CATALINA_BASE (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
-      "regexp" => /export CATALINA_BASE="\/var\/lib\/tomcat\/myapp"/,
+      "regexp" => /export CATALINA_BASE="#{instances}\/myapp"/,
     },
     "CATALINA_BASE (custom)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
@@ -199,7 +200,7 @@ describe 'tomcat::instance', :type => :define do
     },
     "CATALINA_HOME (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
-      "regexp" => /export CATALINA_HOME="\/usr\/local\/apache-tomcat-7\.0\.56"/,
+      "regexp" => /export CATALINA_HOME="#{catalina_home}/,
     },
     "CATALINA_HOME (custom)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
@@ -223,10 +224,6 @@ describe 'tomcat::instance', :type => :define do
       "file"   => "/etc/init.d/tomcat_myapp",
       "regexp" =>  /export CATALINA_PID="#{instances}\/myapp\/run\/myapp\.pid"/,
     },
-    "CATALINA_PID (default)" => {
-      "file"   => "/etc/init.d/tomcat_myapp",
-      "regexp" =>  /export CATALINA_PID="#{instances}\/myapp\/run\/myapp\.pid"/,
-    },
     "CATALINA_PID (custom)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
       "params" => {
@@ -238,49 +235,49 @@ describe 'tomcat::instance', :type => :define do
     #
     # server.xml
     #
-    "shutdown port set correctly in template" => {
+    "shutdown port (custom)" => {
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
         "shutdown_port" => 1234,
       },
       "regexp" => /<Server port="1234" shutdown="SHUTDOWN">/,
     },
-    "http port set correctly in template" => {
+    "http port set (custom)" => {
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
         "http_port"     => 1234,
       },
       "regexp" => /<Connector port="1234" protocol="HTTP\/1\.1"/,
     },
-    "unpack_wars = true set correctly in template" => {
+    "unpack_wars = true (custom)" => {
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
         "unpack_wars" => true,
       },
       "regexp" => /unpackWARs="true"/,
     },
-    "unpack_wars = false set correctly in template" => {
+    "unpack_wars = false (custom)" => {
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
         "unpack_wars" => false,
       },
       "regexp" => /unpackWARs="false"/,
     },
-    "auto_deploy = true set correctly in template" => {
+    "auto_deploy = true (custom)" => {
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
         "auto_deploy" => true,
       },
       "regexp" => /autoDeploy="true"/,
     },
-    "auto_deploy = false set correctly in template" => {
+    "auto_deploy = false (custom)" => {
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
         "auto_deploy" => false,
       },
       "regexp" => /autoDeploy="false"/,
     },
-    "server_xml_jdbc set in template" => {
+    "server_xml_jdbc (custom)" => {
       "file"   => "#{instances}/myapp/conf/server.xml",
       "params" => {
         "server_xml_jdbc" => "<jdbc>",
@@ -465,27 +462,27 @@ describe 'tomcat::instance', :type => :define do
     #
     # logging.properties
     #
-    "1catalina.org.apache.juli.FileHandler.directory set via default" => {
+    "1catalina.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "regexp" =>
         /1catalina\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
     },
-    "2localhost.org.apache.juli.FileHandler.directory set via default" => {
+    "2localhost.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties", 
       "regexp" => 
         /2localhost\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
     },
-    "3manager.org.apache.juli.FileHandler.directory set via default" => {
+    "3manager.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "regexp" => 
         /3manager\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
     },
-    "4host-manager.org.apache.juli.FileHandler.directory set via default" => {
+    "4host-manager.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "regexp" => 
         /4host-manager\.org\.apache\.juli\.FileHandler\.directory = \/var\/log\/tomcat\/myapp/,
     },
-    "1catalina.org.apache.juli.FileHandler.directory set via param" => {
+    "1catalina.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "params" => {
         "log_dir" => "/foobar",
@@ -493,7 +490,7 @@ describe 'tomcat::instance', :type => :define do
       "regexp" =>
         /1catalina\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
-    "2localhost.org.apache.juli.FileHandler.directory set via param" => {
+    "2localhost.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "params" => {
         "log_dir" => "/foobar",
@@ -501,7 +498,7 @@ describe 'tomcat::instance', :type => :define do
       "regexp" =>
         /2localhost\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
-    "3manager.org.apache.juli.FileHandler.directory set via param" => {
+    "3manager.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "params" => {
         "log_dir" => "/foobar",
@@ -509,7 +506,7 @@ describe 'tomcat::instance', :type => :define do
       "regexp" =>
         /3manager\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
-    "4host-manager.org.apache.juli.FileHandler.directory set via param" => {
+    "4host-manager.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{instances}/myapp/conf/logging.properties",
       "params" => {
         "log_dir" => "/foobar",
@@ -518,6 +515,30 @@ describe 'tomcat::instance', :type => :define do
         /4host-manager\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
 
+    #
+    # catalina.properties
+    #
+    "common.loader (default)" => {
+      "file"   => "#{instances}/myapp/conf/catalina.properties",
+      "regexp" =>
+        /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\/usr\/local\/lib\/tomcat_shared,\/usr\/local\/lib\/tomcat_shared\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
+    },
+    "common.loader (shared_lib_dir off)" => {
+      "file"   => "#{instances}/myapp/conf/catalina.properties",
+      "params" => {
+        "shared_lib_dir" => false,
+      },
+      "regexp" => 
+        /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
+    },
+    "common.loader (shared_lib_dir custom)" => {
+      "file"   => "#{instances}/myapp/conf/catalina.properties",
+      "params" => {
+        "shared_lib_dir" => "/foobar",
+      },
+      "regexp" =>
+        /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\/foobar,\/foobar\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
+    },
 
     # skip tomcat-users.xml (no variables)
     # skip web.xml (no variables)
