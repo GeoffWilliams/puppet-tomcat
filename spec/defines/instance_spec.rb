@@ -87,8 +87,27 @@ describe 'tomcat::instance', :type => :define do
 
 
   #
-  # Files and directories:  Owners/groups/permissions
+  # Files and directories
   #
+  context "instance_root_dir works" do
+    let :title do
+      "myapp"
+    end
+    let :params do
+      {
+        "http_port"         => 8080,
+        "shutdown_port"     => 8088,
+        "instance_root_dir" => "/home/tomcat",
+      }
+    end
+    it {
+      should contain_file("/home/tomcat/myapp").with(
+        "ensure" => "directory",
+      )
+    }
+  end
+
+
   context "owners/groups/permissions (default)" do
     let :title do
       "myapp"
