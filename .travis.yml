@@ -10,8 +10,7 @@ rvm:
   - 2.0.0
 env:
   matrix:
-  - PUPPET_GEM_VERSION="~> 3.3.0"
-  - PUPPET_GEM_VERSION="~> 3.4.0"
+  - PUPPET_GEM_VERSION="~> 3.5.0"
 matrix:
   fast_finish: true
 notifications:
