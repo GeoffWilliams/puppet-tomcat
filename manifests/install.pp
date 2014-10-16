@@ -52,6 +52,7 @@ define tomcat::install( $ensure = present,
     validate_absolute_path($symlink_source)
 
     file { $symlink_source:
+      ensure => link,
       target => $symlink_target,
     }
   }
