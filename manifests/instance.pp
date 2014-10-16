@@ -26,9 +26,7 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $file_group = $::tomcat::params::file_group,
                         $major_version = $::tomcat::params::major_version,
                         $shared_lib_dir = $::tomcat::params::shared_lib_dir,
-                        $shared_lib_trigger = $::tomcat::params::shared_lib_trigger,
                         $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir,
-                        $endorsed_lib_trigger = $::tomcat::params::endorsed_lib_trigger,
                         $server_xml_jdbc = "",
                         $context_xml_jdbc = "",
                         $init_script_template = false,
@@ -40,7 +38,6 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $tomcat_users_xml_template = false,
                         $web_xml_template = false,
                         $log_dir = false,
-                        $additional_watched = [],
                         $catalina_properties_extra_args = "",
                         $tomcat_extra_setenv_args = "",
       ) { 
@@ -82,14 +79,11 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   }
   if ($shared_lib_dir) {
     validate_absolute_path($shared_lib_dir)
-    validate_absolute_path($shared_lib_trigger)
   } 
   if ($endorsed_lib_dir) {
     validate_absolute_path($endorsed_lib_dir)
-    validate_absolute_path($endorsed_lib_trigger)
   }
 
-  validate_array($additional_watched)
   validate_string($catalina_properties_extra_args)
   validate_string($tomcat_extra_setenv_args)
 
@@ -100,6 +94,8 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   $init_script_file = "/etc/init.d/${service_name}"
   $instance_dir = "${instance_root_dir}/${instance_name}"
   $xml_validate_command = $::tomcat::params::xml_validate_command
+  $endorsed_lib_trigger = "${endorsed_lib_dir}/${::tomcat::params::trigger_file}"
+  $shared_lib_trigger = "${shared_lib_dir}/${::tomcat::params::trigger_file}"
 
   # choose the PID file and logging directories for this instance.  If
   # user has specified something this will be used instead of the defaults. If
@@ -269,11 +265,7 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
 
   # concatenate all the watched resources to one array
   $lib_watched = concat($endorsed_lib_dir_watched, $shared_lib_dir_watched)
-  $instance_watched = concat($basic_watched, $lib_watched)
-  $watched = concat($instance_watched, $additional_watched)
- 
-
-
+  $watched = concat($basic_watched, $lib_watched)
 
   # ensure ports are unique.  puppet takes care of this for us when we build 
   # the dependency graph.  Recall that type + title definitions must be unique 

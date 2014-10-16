@@ -48,11 +48,10 @@ class tomcat::params {
   # prefix to apply to init scripts eg, "tomcat_" to create tomcat_myinstance
   $service_prefix = "tomcat_"
 
+  $trigger_file = "/reload_tomcat"
   $shared_lib_dir = "/usr/local/lib/tomcat_shared"
-  $shared_lib_trigger = "${shared_lib_dir}/trigger"
 
   $endorsed_lib_dir = "/usr/local/lib/tomcat_endorsed"
-  $endorsed_lib_trigger = "${endorsed_lib_dir}/trigger"
 
   # file for catalina.out (stdout/stderr) logging
   $catalina_out = "catalina.out"
