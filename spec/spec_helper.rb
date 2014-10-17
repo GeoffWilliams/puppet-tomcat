@@ -1,6 +1,8 @@
 dir = File.expand_path(File.dirname(__FILE__))
 $LOAD_PATH.unshift File.join(dir, 'lib')
 
+load "defaults.rb"
+
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'puppet'
 require 'rspec'

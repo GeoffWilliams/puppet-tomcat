@@ -1,40 +1,6 @@
 require 'spec_helper'
 
-instances = "/var/lib/tomcat"
-catalina_home = "/usr/local/apache-tomcat"
-def_file_owner = "root"
-def_file_group = "tomcat"
-def_instance_user = "tomcat"
-def_instance_group = def_instance_user
-def_file_mode_regular = "0640"
-def_file_mode_script = "0750"
-def_file_mode_init = "0755"
-custom_file_owner = "tomcat_user"
-custom_file_group = "tomcat_group"
-custom_instance_user = "tomcat_instance_user"
-custom_instance_group = custom_instance_user
-custom_file_mode_regular = "0600"
-custom_file_mode_script  = "0700"
-custom_file_mode_init = "0740"
-
-
 describe 'tomcat::instance', :type => :define do
-
-  def_shared_lib_dir = "/usr/local/lib/tomcat_shared"
-  def_endorsed_lib_dir = "/usr/local/lib/tomcat_endorsed"
-  custom_shared_lib_dir = "/foo_shared"
-  custom_endorsed_lib_dir = "/foo_endorsed"
-  lib_name = "libfoo.jar"
-  trigger_file = "reload_tomcat"
-  exec_trigger_title = "trigger_#{lib_name}"
-  def_shared_lib_trigger = "#{def_shared_lib_dir}/#{trigger_file}"
-  def_endorsed_lib_trigger = "#{def_endorsed_lib_dir}/#{trigger_file}"
-  custom_shared_lib_trigger = "#{custom_shared_lib_dir}/#{trigger_file}"
-  custom_endorsed_lib_trigger = "#{custom_endorsed_lib_dir}/#{trigger_file}"
-  def_java = "/usr/java/default"
-  def_tomcat = "/usr/local/apache-tomcat"
-  custom_java = "/java_foo"
-  custom_tomcat = "/tomcat_foo"
 
   let :pre_condition do
     'class { "tomcat": }'
@@ -96,7 +62,7 @@ describe 'tomcat::instance', :type => :define do
     end
     it {
       should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{def_shared_lib_trigger}]"
+          "File[#{$def_shared_lib_trigger}]"
       )
     }
   end
@@ -113,7 +79,7 @@ describe 'tomcat::instance', :type => :define do
     end
     it {
       should_not contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{def_shared_lib_trigger}]"
+          "File[#{$def_shared_lib_trigger}]"
       )
     }
   end
@@ -121,7 +87,7 @@ describe 'tomcat::instance', :type => :define do
     let :pre_condition do
       <<-EOD
       class { "tomcat":
-        shared_lib_dir => "#{custom_shared_lib_dir}",
+        shared_lib_dir => "#{$custom_shared_lib_dir}",
       }
 
       EOD
@@ -133,12 +99,12 @@ describe 'tomcat::instance', :type => :define do
       {
         "http_port"      => 8080,
         "shutdown_port"  => 8088,
-        "shared_lib_dir" => custom_shared_lib_dir,
+        "shared_lib_dir" => $custom_shared_lib_dir,
       }
     end
     it {
       should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{custom_shared_lib_trigger}]"
+          "File[#{$custom_shared_lib_trigger}]"
       )
     }
   end
@@ -156,7 +122,7 @@ describe 'tomcat::instance', :type => :define do
     end
     it {
       should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{def_endorsed_lib_trigger}]"
+          "File[#{$def_endorsed_lib_trigger}]"
       )
     }
   end
@@ -173,7 +139,7 @@ describe 'tomcat::instance', :type => :define do
     end
     it {
       should_not contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{def_endorsed_lib_trigger}]"
+          "File[#{$def_endorsed_lib_trigger}]"
       )
     }
   end
@@ -181,7 +147,7 @@ describe 'tomcat::instance', :type => :define do
     let :pre_condition do
       <<-EOD
       class { "tomcat":
-        endorsed_lib_dir => "#{custom_endorsed_lib_dir}",
+        endorsed_lib_dir => "#{$custom_endorsed_lib_dir}",
       }
 
       EOD
@@ -194,12 +160,12 @@ describe 'tomcat::instance', :type => :define do
       {
         "http_port"        => 8080,
         "shutdown_port"    => 8088,
-        "endorsed_lib_dir" => custom_endorsed_lib_dir,
+        "endorsed_lib_dir" => $custom_endorsed_lib_dir,
       }
     end
     it {
       should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{custom_endorsed_lib_trigger}]"
+          "File[#{$custom_endorsed_lib_trigger}]"
       )
     }
   end
@@ -208,7 +174,7 @@ describe 'tomcat::instance', :type => :define do
     let :pre_condition do
       <<-EOD
       class { "tomcat":}
-      file { "#{def_java}":
+      file { "#{$def_java}":
         ensure => file,
       }
       EOD
@@ -226,7 +192,7 @@ describe 'tomcat::instance', :type => :define do
     end
     it {
       should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{def_java}]"
+          "File[#{$def_java}]"
       )
     }
   end
@@ -235,7 +201,7 @@ describe 'tomcat::instance', :type => :define do
     let :pre_condition do
       <<-EOD
       class { "tomcat":}
-      file { "#{custom_java}":
+      file { "#{$custom_java}":
         ensure => file,
       }
       EOD
@@ -248,13 +214,13 @@ describe 'tomcat::instance', :type => :define do
       {
         "http_port"        => 8080,
         "shutdown_port"    => 8088,
-        "java_home"        => custom_java,
+        "java_home"        => $custom_java,
         "watch_java"     => true,
       }
     end
     it {
       should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{custom_java}]"
+          "File[#{$custom_java}]"
       )
     }
   end
@@ -262,7 +228,7 @@ describe 'tomcat::instance', :type => :define do
     let :pre_condition do
       <<-EOD
       class { "tomcat":}
-      file { "#{def_java}":
+      file { "#{$def_java}":
         ensure => file,
       }
       EOD
@@ -280,7 +246,7 @@ describe 'tomcat::instance', :type => :define do
     end
     it {
       should_not contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{def_java}]"
+          "File[#{$def_java}]"
       )
     }
   end
@@ -289,7 +255,7 @@ describe 'tomcat::instance', :type => :define do
     let :pre_condition do
       <<-EOD
       class { "tomcat":}
-      file { "#{def_tomcat}":
+      file { "#{$def_tomcat}":
         ensure => file,
       }
       EOD
@@ -307,7 +273,7 @@ describe 'tomcat::instance', :type => :define do
     end
     it {
       should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{def_tomcat}]"
+          "File[#{$def_tomcat}]"
       )
     }
   end
@@ -316,7 +282,7 @@ describe 'tomcat::instance', :type => :define do
     let :pre_condition do
       <<-EOD
       class { "tomcat":}
-      file { "#{def_tomcat}":
+      file { "#{$def_tomcat}":
         ensure => file,
       }
       EOD
@@ -334,7 +300,7 @@ describe 'tomcat::instance', :type => :define do
     end
     it {
       should_not contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{def_tomcat}]"
+          "File[#{$def_tomcat}]"
       )
     }
   end
@@ -343,7 +309,7 @@ describe 'tomcat::instance', :type => :define do
     let :pre_condition do
       <<-EOD
       class { "tomcat":}
-      file { "#{custom_tomcat}":
+      file { "#{$custom_tomcat}":
         ensure => file,
       }
       EOD
@@ -356,13 +322,13 @@ describe 'tomcat::instance', :type => :define do
       {
         "http_port"        => 8080,
         "shutdown_port"    => 8088,
-        "catalina_home"    => custom_tomcat,
+        "catalina_home"    => $custom_tomcat,
         "watch_tomcat"     => true,
       }
     end
     it {
       should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{custom_tomcat}]"
+          "File[#{$custom_tomcat}]"
       )
     }
   end
@@ -425,131 +391,131 @@ describe 'tomcat::instance', :type => :define do
       # init script
       should contain_file("/etc/init.d/tomcat_myapp").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_init,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_init,
       )
 
       # setenv.sh
-      should contain_file("#{instances}/myapp/bin/setenv.sh").with(
+      should contain_file("#{$instances}/myapp/bin/setenv.sh").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
+        "owner"  => $def_file_owner,
         # needs group set to the owner of the tomcat process so the file
         # can be read and executed but advise against making it world readable
         # by default incase proxy passwords, etc are stored in here...
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_script,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_script,
       )
       
       # catalina.properties
-      should contain_file("#{instances}/myapp/conf/catalina.properties").with(
+      should contain_file("#{$instances}/myapp/conf/catalina.properties").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
 
       # context.xml
-      should contain_file("#{instances}/myapp/conf/context.xml").with(
+      should contain_file("#{$instances}/myapp/conf/context.xml").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
       
       # logging.properties
-      should contain_file("#{instances}/myapp/conf/logging.properties").with(
+      should contain_file("#{$instances}/myapp/conf/logging.properties").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
 
       # server.xml
-      should contain_file("#{instances}/myapp/conf/server.xml").with(
+      should contain_file("#{$instances}/myapp/conf/server.xml").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
 
       # tomcat-users.xml
-      should contain_file("#{instances}/myapp/conf/tomcat-users.xml").with(
+      should contain_file("#{$instances}/myapp/conf/tomcat-users.xml").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
 
       # web.xml
-      should contain_file("#{instances}/myapp/conf/web.xml").with(
+      should contain_file("#{$instances}/myapp/conf/web.xml").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
 
       # /bin (ro)
-      should contain_file("#{instances}/myapp/bin").with(
+      should contain_file("#{$instances}/myapp/bin").with(
         "ensure" => "directory",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
 
       # /conf (ro)
-      should contain_file("#{instances}/myapp/conf").with(
+      should contain_file("#{$instances}/myapp/conf").with(
         "ensure" => "directory",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
 
       # /lib (ro)
-      should contain_file("#{instances}/myapp/lib").with(
+      should contain_file("#{$instances}/myapp/lib").with(
         "ensure" => "directory",
-        "owner"  => def_file_owner,
-        "group"  => def_file_group,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_file_owner,
+        "group"  => $def_file_group,
+        "mode"   => $def_file_mode_regular,
       )
 
       # /logs (rw)
-      should contain_file("#{instances}/myapp/logs").with(
+      should contain_file("#{$instances}/myapp/logs").with(
         "ensure" => "directory",
-        "owner"  => def_instance_user,
-        "group"  => def_instance_user,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_instance_user,
+        "group"  => $def_instance_user,
+        "mode"   => $def_file_mode_regular,
       )
       # /run (rw)
-      should contain_file("#{instances}/myapp/run").with(
+      should contain_file("#{$instances}/myapp/run").with(
         "ensure" => "directory",
-        "owner"  => def_instance_user,
-        "group"  => def_instance_user,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_instance_user,
+        "group"  => $def_instance_user,
+        "mode"   => $def_file_mode_regular,
       )
 
       # /temp (rw)
-      should contain_file("#{instances}/myapp/temp").with(
+      should contain_file("#{$instances}/myapp/temp").with(
         "ensure" => "directory",
-        "owner"  => def_instance_user,
-        "group"  => def_instance_user,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_instance_user,
+        "group"  => $def_instance_user,
+        "mode"   => $def_file_mode_regular,
       )
 
       # /webapps (rw)
-      should contain_file("#{instances}/myapp/webapps").with(
+      should contain_file("#{$instances}/myapp/webapps").with(
         "ensure" => "directory",
-        "owner"  => def_instance_user,
-        "group"  => def_instance_user,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_instance_user,
+        "group"  => $def_instance_user,
+        "mode"   => $def_file_mode_regular,
       )
 
       # /work (rw)
-      should contain_file("#{instances}/myapp/work").with(
+      should contain_file("#{$instances}/myapp/work").with(
         "ensure" => "directory",
-        "owner"  => def_instance_user,
-        "group"  => def_instance_user,
-        "mode"   => def_file_mode_regular,
+        "owner"  => $def_instance_user,
+        "group"  => $def_instance_user,
+        "mode"   => $def_file_mode_regular,
       )
     }
   end
@@ -561,12 +527,12 @@ describe 'tomcat::instance', :type => :define do
       {
         "http_port"         => 8080,
         "shutdown_port"     => 8088,
-        "file_owner"        => custom_file_owner,
-        "file_group"        => custom_file_group,
-        "instance_user"     => custom_instance_user,
-        "file_mode_init"    => custom_file_mode_init,
-        "file_mode_regular" => custom_file_mode_regular,
-        "file_mode_script"  => custom_file_mode_script,
+        "file_owner"        => $custom_file_owner,
+        "file_group"        => $custom_file_group,
+        "instance_user"     => $custom_instance_user,
+        "file_mode_init"    => $custom_file_mode_init,
+        "file_mode_regular" => $custom_file_mode_regular,
+        "file_mode_script"  => $custom_file_mode_script,
       }
     end
     it {
@@ -574,128 +540,128 @@ describe 'tomcat::instance', :type => :define do
       # don't allow user to have init scripts owned by non-root
       should contain_file("/etc/init.d/tomcat_myapp").with(
         "ensure" => "file",
-        "owner"  => def_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_init,
+        "owner"  => $def_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_init,
       )
 
       # setenv.sh
-      should contain_file("#{instances}/myapp/bin/setenv.sh").with(
+      should contain_file("#{$instances}/myapp/bin/setenv.sh").with(
         "ensure" => "file",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_script,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_script,
       )
 
       # catalina.properties
-      should contain_file("#{instances}/myapp/conf/catalina.properties").with(
+      should contain_file("#{$instances}/myapp/conf/catalina.properties").with(
         "ensure" => "file",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # context.xml
-      should contain_file("#{instances}/myapp/conf/context.xml").with(
+      should contain_file("#{$instances}/myapp/conf/context.xml").with(
         "ensure" => "file",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # logging.properties
-      should contain_file("#{instances}/myapp/conf/logging.properties").with(
+      should contain_file("#{$instances}/myapp/conf/logging.properties").with(
         "ensure" => "file",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # server.xml
-      should contain_file("#{instances}/myapp/conf/server.xml").with(
+      should contain_file("#{$instances}/myapp/conf/server.xml").with(
         "ensure" => "file",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # tomcat-users.xml
-      should contain_file("#{instances}/myapp/conf/tomcat-users.xml").with(
+      should contain_file("#{$instances}/myapp/conf/tomcat-users.xml").with(
         "ensure" => "file",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # web.xml
-      should contain_file("#{instances}/myapp/conf/web.xml").with(
+      should contain_file("#{$instances}/myapp/conf/web.xml").with(
         "ensure" => "file",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # /bin (ro)
-      should contain_file("#{instances}/myapp/bin").with(
+      should contain_file("#{$instances}/myapp/bin").with(
         "ensure" => "directory",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # /conf (ro)
-      should contain_file("#{instances}/myapp/conf").with(
+      should contain_file("#{$instances}/myapp/conf").with(
         "ensure" => "directory",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # /lib (ro)
-      should contain_file("#{instances}/myapp/lib").with(
+      should contain_file("#{$instances}/myapp/lib").with(
         "ensure" => "directory",
-        "owner"  => custom_file_owner,
-        "group"  => custom_file_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_file_owner,
+        "group"  => $custom_file_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # /logs (rw)
-      should contain_file("#{instances}/myapp/logs").with(
+      should contain_file("#{$instances}/myapp/logs").with(
         "ensure" => "directory",
-        "owner"  => custom_instance_user,
-        "group"  => custom_instance_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_instance_user,
+        "group"  => $custom_instance_group,
+        "mode"   => $custom_file_mode_regular,
       )
       # /run (rw)
-      should contain_file("#{instances}/myapp/run").with(
+      should contain_file("#{$instances}/myapp/run").with(
         "ensure" => "directory",
-        "owner"  => custom_instance_user,
-        "group"  => custom_instance_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_instance_user,
+        "group"  => $custom_instance_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # /temp (rw)
-      should contain_file("#{instances}/myapp/temp").with(
+      should contain_file("#{$instances}/myapp/temp").with(
         "ensure" => "directory",
-        "owner"  => custom_instance_user,
-        "group"  => custom_instance_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_instance_user,
+        "group"  => $custom_instance_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # /webapps (rw)
-      should contain_file("#{instances}/myapp/webapps").with(
+      should contain_file("#{$instances}/myapp/webapps").with(
         "ensure" => "directory",
-        "owner"  => custom_instance_user,
-        "group"  => custom_instance_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_instance_user,
+        "group"  => $custom_instance_group,
+        "mode"   => $custom_file_mode_regular,
       )
 
       # /work (rw)
-      should contain_file("#{instances}/myapp/work").with(
+      should contain_file("#{$instances}/myapp/work").with(
         "ensure" => "directory",
-        "owner"  => custom_instance_user,
-        "group"  => custom_instance_group,
-        "mode"   => custom_file_mode_regular,
+        "owner"  => $custom_instance_user,
+        "group"  => $custom_instance_group,
+        "mode"   => $custom_file_mode_regular,
       )
     }
   end
@@ -721,46 +687,9 @@ describe 'tomcat::instance', :type => :define do
     }
   end
     
-  #
-  # Instance files (excludes init script - already checked)
-  #
-  instance_files = ["#{instances}/myapp/bin/setenv.sh",
-                    "#{instances}/myapp/conf/server.xml",
-                    "#{instances}/myapp/conf/catalina.properties",
-                    "#{instances}/myapp/conf/context.xml",
-                    "#{instances}/myapp/conf/logging.properties",
-                    "#{instances}/myapp/conf/tomcat-users.xml",
-                    "#{instances}/myapp/conf/web.xml"]
-
-  instance_files.each do | file |
-    context "check file #{file} created" do
-
-      let :title do
-        "myapp"
-      end
-      let :params do
-        {
-          "http_port"     => 8080,
-          "shutdown_port" => 8088,
-        }
-      end
-      it { 
-        should contain_file(file).with(
-          "ensure" => "file",
-        )
-      }
-    end
-  end
-
   # 
   # Template file contents
   # 
-  default_params = {
-    "http_port"     => 8080,
-    "shutdown_port" => 8088,
-  }
-  default_title = "myapp"
-
   tests = {
 
     #
@@ -780,7 +709,7 @@ describe 'tomcat::instance', :type => :define do
     },
     "CATALINA_BASE (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
-      "regexp" => /export CATALINA_BASE="#{instances}\/myapp"/,
+      "regexp" => /export CATALINA_BASE="#{$instances}\/myapp"/,
     },
     "CATALINA_BASE (custom)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
@@ -791,7 +720,7 @@ describe 'tomcat::instance', :type => :define do
     },
     "CATALINA_HOME (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
-      "regexp" => /export CATALINA_HOME="#{catalina_home}/,
+      "regexp" => /export CATALINA_HOME="#{$def_tomcat}/,
     },
     "CATALINA_HOME (custom)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
@@ -813,7 +742,7 @@ describe 'tomcat::instance', :type => :define do
     },
     "CATALINA_PID (default)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
-      "regexp" =>  /export CATALINA_PID="#{instances}\/myapp\/run\/myapp\.pid"/,
+      "regexp" =>  /export CATALINA_PID="#{$instances}\/myapp\/run\/myapp\.pid"/,
     },
     "CATALINA_PID (custom)" => {
       "file"   => "/etc/init.d/tomcat_myapp",
@@ -827,63 +756,63 @@ describe 'tomcat::instance', :type => :define do
     # server.xml
     #
     "shutdown port (custom)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "shutdown_port" => 1234,
       },
       "regexp" => /<Server port="1234" shutdown="SHUTDOWN">/,
     },
     "http port set (custom)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "http_port"     => 1234,
       },
       "regexp" => /<Connector port="1234" protocol="HTTP\/1\.1"/,
     },
     "unpack_wars = true (custom)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "unpack_wars" => true,
       },
       "regexp" => /unpackWARs="true"/,
     },
     "unpack_wars = false (custom)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "unpack_wars" => false,
       },
       "regexp" => /unpackWARs="false"/,
     },
     "auto_deploy = true (custom)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "auto_deploy" => true,
       },
       "regexp" => /autoDeploy="true"/,
     },
     "auto_deploy = false (custom)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "auto_deploy" => false,
       },
       "regexp" => /autoDeploy="false"/,
     },
     "server_xml_jdbc (custom)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "server_xml_jdbc" => "<jdbc>",
       },
       "regexp" => /<jdbc>/,
     },
     "https_port (custom/on)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "https_port" => "4444",
       },
       "regexp" => /<Connector port="4444"/,
     },
     "https_port (custom attributes)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "https_port"       => "4444",
         "https_attributes" => "foobar",
@@ -891,11 +820,11 @@ describe 'tomcat::instance', :type => :define do
       "regexp" => /<Connector port="4444" foobar \/>/,
     },
     "ajp_port (default/off)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "inv_regexp" => /protocol="AJP\/1\.3"/,
     },
     "ajp_port (custom/on)" => {
-      "file"   => "#{instances}/myapp/conf/server.xml",
+      "file"   => "#{$instances}/myapp/conf/server.xml",
       "params" => {
         "ajp_port" => "8888",
       },
@@ -906,58 +835,58 @@ describe 'tomcat::instance', :type => :define do
     # setenv.sh
     #
     "JAVA_HOME (custom)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "regexp" => /export JAVA_HOME="\/usr\/java\/default"/,
     },
     "JAVA_HOME (custom)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "java_home" => "/foobar",
       },
       "regexp" => /export JAVA_HOME="\/foobar"/,
     },
     "JAVA_OPTS (default)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "regexp" => /export JAVA_OPTS=""/,
     },
     "JAVA_OPTS (custom)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "java_opts" => "foobar",
       },
       "regexp" => /export JAVA_OPTS="foobar"/,
     },
     "CATALINA_OUT (default)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
-      "regexp" => /export CATALINA_OUT="#{instances}\/myapp\/logs\/catalina\.out"/,
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
+      "regexp" => /export CATALINA_OUT="#{$instances}\/myapp\/logs\/catalina\.out"/,
     },
     "CATALINA_OUT (custom log_dir)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "log_dir" => "/foobar",
       },
       "regexp" => /export CATALINA_OUT="\/foobar\/catalina\.out"/,
     },
     "CATALINA_OPTS_JMX (defalt off)" => {
-      "file"       => "#{instances}/myapp/bin/setenv.sh",
+      "file"       => "#{$instances}/myapp/bin/setenv.sh",
       "inv_regexp" => /CATALINA_OPTS_JMX="/,
     },
     "CATALINA_OPTS_JMX jmxremote.port (custom/active)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port" => 6666,
       },
       "regexp" => /-Dcom\.sun\.management\.jmxremote\.port=6666/,
     },
     "CATALINA_OPTS_JMX jmxremote.ssl (default off)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port" => 6666,
       },
       "regexp" => /-Dcom.sun.management.jmxremote.ssl=false/,
     },
     "CATALINA_OPTS_JMX jmxremote.ssl (custom on)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port" => 6666,
         "jmx_ssl"  => true,
@@ -965,14 +894,14 @@ describe 'tomcat::instance', :type => :define do
       "regexp" => /-Dcom\.sun\.management\.jmxremote\.ssl=true/,
     },
     "CATALINA_OPTS_JMX jmxremote.authenticate (default off)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port"          => 6666,
       },
       "regexp" => /-Dcom\.sun\.management\.jmxremote\.authenticate=false/,
     },
     "CATALINA_OPTS_JMX jmxremote.authenticate (default off)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port"          => 6666,
         "jmx_authenticate"  => true,
@@ -980,14 +909,14 @@ describe 'tomcat::instance', :type => :define do
       "regexp" => /-Dcom\.sun\.management\.jmxremote\.authenticate=true/,
     },
     "CATALINA_OPTS_JMX jmxremote.password.file (default blank)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port" => 6666,
       },
       "regexp" => /-Dcom\.sun\.management\.jmxremote\.password\.file= \\$/,
     },
     "CATALINA_OPTS_JMX jmxremote.password.file (custom)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port"          => 6666,
         "jmx_password_file" => "/foobar",
@@ -995,14 +924,14 @@ describe 'tomcat::instance', :type => :define do
       "regexp" => /-Dcom\.sun\.management\.jmxremote\.password\.file=\/foobar/,
     },
     "CATALINA_OPTS_JMX jmxremote.access.file (default blank)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port" => 6666,
       },
       "regexp" => /-Dcom\.sun\.management\.jmxremote\.access\.file= \\$/,
     },
     "CATALINA_OPTS_JMX jmxremote.access.file (custom)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "jmx_port"          => 6666,
         "jmx_access_file" => "/foobar",
@@ -1010,36 +939,36 @@ describe 'tomcat::instance', :type => :define do
       "regexp" => /-Dcom\.sun\.management\.jmxremote\.access\.file=\/foobar/,
     },
     "CATALINA_OPTS (default)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "regexp" => /CATALINA_OPTS_CFG=""/,
     },
     "CATALINA_OPTS (custom)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "catalina_opts" => "foobar",
       },
       "regexp" => /CATALINA_OPTS_CFG="foobar"/,
     },
     "JAVA_ENDORSED_DIRS (default on)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "regexp" => /export JAVA_ENDORSED_DIRS="\/usr\/local\/lib\/tomcat_endorsed"/,
     },
     "JAVA_ENDORSED_DIRS (set off)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "endorsed_lib_dir" => false,
       },
       "inv_regexp" => /export JAVA_ENDORSED_DIRS/,
     },
     "JAVA_ENDORSED_DIRS (set custom)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "endorsed_lib_dir" => "/foobar",
       },
       "regexp" => /export JAVA_ENDORSED_DIRS="\/foobar"/,
     },
     "tomcat_extra_setenv (set)" => {
-      "file"   => "#{instances}/myapp/bin/setenv.sh",
+      "file"   => "#{$instances}/myapp/bin/setenv.sh",
       "params" => {
         "tomcat_extra_setenv_args" => "foobar",
       },
@@ -1050,7 +979,7 @@ describe 'tomcat::instance', :type => :define do
     # context.xml
     #
     "jdbc xml fragment in template" => {
-      "file"   => "#{instances}/myapp/conf/context.xml",
+      "file"   => "#{$instances}/myapp/conf/context.xml",
       "params" => {
         "context_xml_jdbc" => "<jdbc>",
       },
@@ -1061,27 +990,27 @@ describe 'tomcat::instance', :type => :define do
     # logging.properties
     #
     "1catalina.org.apache.juli.FileHandler.directory (default)" => {
-      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "file"   => "#{$instances}/myapp/conf/logging.properties",
       "regexp" =>
-        /1catalina\.org\.apache\.juli\.FileHandler\.directory = #{instances}\/myapp\/logs/,
+        /1catalina\.org\.apache\.juli\.FileHandler\.directory = #{$instances}\/myapp\/logs/,
     },
     "2localhost.org.apache.juli.FileHandler.directory (default)" => {
-      "file"   => "#{instances}/myapp/conf/logging.properties", 
+      "file"   => "#{$instances}/myapp/conf/logging.properties", 
       "regexp" => 
-        /2localhost\.org\.apache\.juli\.FileHandler\.directory = #{instances}\/myapp\/logs/,
+        /2localhost\.org\.apache\.juli\.FileHandler\.directory = #{$instances}\/myapp\/logs/,
     },
     "3manager.org.apache.juli.FileHandler.directory (default)" => {
-      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "file"   => "#{$instances}/myapp/conf/logging.properties",
       "regexp" => 
-        /3manager\.org\.apache\.juli\.FileHandler\.directory = #{instances}\/myapp\/logs/,
+        /3manager\.org\.apache\.juli\.FileHandler\.directory = #{$instances}\/myapp\/logs/,
     },
     "4host-manager.org.apache.juli.FileHandler.directory (default)" => {
-      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "file"   => "#{$instances}/myapp/conf/logging.properties",
       "regexp" => 
-        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = #{instances}\/myapp\/logs/,
+        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = #{$instances}\/myapp\/logs/,
     },
     "1catalina.org.apache.juli.FileHandler.directory (custom)" => {
-      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "file"   => "#{$instances}/myapp/conf/logging.properties",
       "params" => {
         "log_dir" => "/foobar",
       },
@@ -1089,7 +1018,7 @@ describe 'tomcat::instance', :type => :define do
         /1catalina\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
     "2localhost.org.apache.juli.FileHandler.directory (custom)" => {
-      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "file"   => "#{$instances}/myapp/conf/logging.properties",
       "params" => {
         "log_dir" => "/foobar",
       },
@@ -1097,7 +1026,7 @@ describe 'tomcat::instance', :type => :define do
         /2localhost\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
     "3manager.org.apache.juli.FileHandler.directory (custom)" => {
-      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "file"   => "#{$instances}/myapp/conf/logging.properties",
       "params" => {
         "log_dir" => "/foobar",
       },
@@ -1105,7 +1034,7 @@ describe 'tomcat::instance', :type => :define do
         /3manager\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
     },
     "4host-manager.org.apache.juli.FileHandler.directory (custom)" => {
-      "file"   => "#{instances}/myapp/conf/logging.properties",
+      "file"   => "#{$instances}/myapp/conf/logging.properties",
       "params" => {
         "log_dir" => "/foobar",
       },
@@ -1117,12 +1046,12 @@ describe 'tomcat::instance', :type => :define do
     # catalina.properties
     #
     "common.loader (default)" => {
-      "file"   => "#{instances}/myapp/conf/catalina.properties",
+      "file"   => "#{$instances}/myapp/conf/catalina.properties",
       "regexp" =>
         /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\/usr\/local\/lib\/tomcat_shared,\/usr\/local\/lib\/tomcat_shared\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
     },
     "common.loader (shared_lib_dir off)" => {
-      "file"   => "#{instances}/myapp/conf/catalina.properties",
+      "file"   => "#{$instances}/myapp/conf/catalina.properties",
       "params" => {
         "shared_lib_dir" => false,
       },
@@ -1130,7 +1059,7 @@ describe 'tomcat::instance', :type => :define do
         /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
     },
     "common.loader (shared_lib_dir custom)" => {
-      "file"   => "#{instances}/myapp/conf/catalina.properties",
+      "file"   => "#{$instances}/myapp/conf/catalina.properties",
       "params" => {
         "shared_lib_dir" => "/foobar",
       },
@@ -1138,7 +1067,7 @@ describe 'tomcat::instance', :type => :define do
         /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\/foobar,\/foobar\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
     },
     "catalina_properties_extra_args (custom)" => {
-      "file"   => "#{instances}/myapp/conf/catalina.properties",
+      "file"   => "#{$instances}/myapp/conf/catalina.properties",
       "params" => {
         "catalina_properties_extra_args" => "foobar",
       },
@@ -1154,10 +1083,10 @@ describe 'tomcat::instance', :type => :define do
   tests.each do | test_name, test_data |
     context test_name do
       let :title do
-        test_data["title"] ? test_data["title"] : default_title
+        test_data["title"] ? test_data["title"] : $default_title
       end
       let :params do
-        default_params.merge(test_data["params"] ? test_data["params"] : {})
+        $default_params.merge(test_data["params"] ? test_data["params"] : {})
       end
       it {
         if test_data.has_key?("regexp") 
@@ -1195,10 +1124,10 @@ describe 'tomcat::instance', :type => :define do
   template_param_name.each do | param_name |
     context "test custom template via #{param_name}" do
       let :title do
-        default_title
+        $default_title
       end
       let :params do 
-        default_params.merge({param_name => "/not_here"})
+        $default_params.merge({param_name => "/not_here"})
       end
       it {
         expect { subject }.to raise_error(/No such file or directory - \/not_here/)

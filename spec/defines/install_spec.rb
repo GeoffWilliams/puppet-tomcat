@@ -1,5 +1,6 @@
 require 'spec_helper'
 describe 'tomcat::install', :type => :define do
+
   let :pre_condition do
     'class { "tomcat": }'
   end
@@ -59,7 +60,7 @@ describe 'tomcat::install', :type => :define do
       }
     end
     it {
-      should contain_file("/usr/local/apache-tomcat").with(
+      should contain_file($def_tomcat).with(
         "ensure"   => "link",
         "target"   => "/baz",
       )
