@@ -1,3 +1,55 @@
+# == Define: tomcat::library
+#
+# Installs or removes a shared/endorsed library from a node
+#
+# === Parameters
+#
+# [*namevar*]
+#   Filename of library to install/remove
+# 
+# [*ensure*]
+#   `present` to install a library or `absent` to remove it
+#
+# [*download_site*]
+#   URL of site to download library file from (must be supported by 
+#   nanliu-staging module)
+#
+# [*lib_type*]
+#   "shared" to install a shared Java library, "endorsed" to install an 
+#   endorsed library
+#
+# [*shared_lib_dir*]
+#   Location of the directory used for shared Java libraries on this node or
+#   false to disable this feature.  Must match the setting used when declaring
+#   the ::tomcat class
+#
+# [*endorsed_lib_dir*]
+#   Location of the directory used for endorsed Java libraries on this node or
+#   false to disable this feature.  Must match the setting used when declaring
+#   the ::tomcat class
+#
+# [*file_owner*]
+#   Non-writable directories and files will be owned by this user (except the
+#   init script)
+#
+# [*file_group*]
+#   Non-writable directories and files will be owned by this group
+#
+# [*file_mode_regular*]
+#   Mode to use for 'normal' files
+#
+# === Examples
+#
+# see README.md
+#
+# === Authors
+#
+# Geoff Williams <geoff.williams@puppetlabs.com>
+#
+# === Copyright
+#
+# Copyright 2014 Puppet Labs, unless otherwise noted.
+#
 define tomcat::library( $ensure = present,
                         $download_site = "",
                         $lib_type = "shared",

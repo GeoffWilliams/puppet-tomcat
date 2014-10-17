@@ -1,70 +1,45 @@
 class tomcat::params {
 
-  # ensure the tomcat service (start/stop at boot)
   $service_ensure = true
-
-  # enable the tomcat service (start/stop now)
   $service_enable = true
-
   $ajp_port = false
-
-  # false or https port to open
   $https_port = false
-
+  
+  # will result in a broken ssl configuration if used verbatim - needs keystore
   $https_attributes = 'protocol="org.apache.coyote.http11.Http11Protocol" maxThreads="150" SSLEnabled="true" scheme="https" secure="true" clientAuth="false" sslProtocol="TLS"'
 
-  # false or jmx port to open
   $jmx_port = false
-
   $jmx_ssl = false
-  
   $jmx_authenticate = false
-
   $jmx_password_file = ""
-  
   $jmx_access_file = ""
-
-  # unpack .war files detected in /webapps
   $unpack_wars = true
-
-  # deploy applications detected in /webapps
   $auto_deploy = true
-
-  # default directory to look for java
   $java_home = "/usr/java/default"
-
-  # default directory to look for tomcat shared installation
   $catalina_home = "/usr/local/apache-tomcat"
-
-  # additional options to pass to JDK when starting
   $java_opts = ""
-
-  # additional options to pass to tomcat when starting
   $catalina_opts = ""
-
-  # system user to run tomcat as
   $instance_user = "tomcat"
-
-  # prefix to apply to init scripts eg, "tomcat_" to create tomcat_myinstance
   $service_prefix = "tomcat_"
-
+  
+  # filename of "trigger file" that will force a tomcat reload if found during
+  # a puppet run in one of the shared or endorsed library directories.
   $trigger_file = "reload_tomcat"
   $shared_lib_dir = "/usr/local/lib/tomcat_shared"
-
   $endorsed_lib_dir = "/usr/local/lib/tomcat_endorsed"
 
   # file for catalina.out (stdout/stderr) logging
   $catalina_out = "catalina.out"
 
-  # directory to build tomcat instance's ($CATALINA_BASE's) under
   $instance_root_dir = "/var/tomcat"
 
 
-  # List of directories to create for each tomcat instance
+  # List of RO directories to create for each tomcat instance
   $instance_subdirs_ro = ["/bin",
                           "/conf", 
                           "/lib", ]
 
+  # list of RW directories to create for each tomcat instance
   $log_dir = "logs"
   $pid_dir = "run"
   $instance_subdirs_rw = ["/${log_dir}",
@@ -73,22 +48,12 @@ class tomcat::params {
                           "/work",
                           "/webapps", ]
 
-  # Default mode for regular files.  be default, do not allow files to be world
-  # readlable as they may contain passwords in xml files, etc
   $file_mode_regular = "0640"
-
-  # default mode for scripts
   $file_mode_script = "0750"
-
-  # default mode for init scripts
   $file_mode_init = "0755"
-
-  # default owner for files
   $file_owner = "root"
-
-  # default group for files
   $file_group = "tomcat"
-
+  
   # subdirectory within 'templates' to find tomcat 7 config files
   $tc7_templates = "tc7"
 
@@ -96,12 +61,14 @@ class tomcat::params {
   $tc8_templates = "tc8"
   
   # major version of tomcat we are setting up (used to load the correct 
-  # templates)
+  # default templates)
   $major_version = 7  
 
+  # validate XML config files before reloading tomcat.  Invalid files will
+  # be rejected.  xmllint command comes from libxml2 on redhat
   $xml_validate_command = "xmllint --noout %"
 
-  # where to read the init script template from
+  # filenames and templates
   $init_script_template = "${module_name}/tomcat_init_script.sh.erb"
   $setenv_sh = "/bin/setenv.sh"
   $setenv_sh_template = "${module_name}/setenv.sh.erb"
@@ -118,9 +85,11 @@ class tomcat::params {
   $web_xml = "/conf/web.xml"
   $web_xml_template = "web.xml.erb"
 
+  # list of supported OS families
   $supported_os = [
     "RedHat"
   ]
   
+  # messsage given on attempt to run on unsupported OS
   $unsupported_os_msg = "This Java module only supports the RedHat OS family"
 }

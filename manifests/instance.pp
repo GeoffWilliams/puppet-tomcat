@@ -1,3 +1,198 @@
+# == Define: tomcat::instance
+#
+# Create a tomcat instance on a node
+#
+# === Parameters
+#
+# [*namevar*]
+#   Name of this tomcat instance.  The name chosen will be used to create a
+#   directory under `$instance_root_dir` and will also be visible in the 
+#   process table
+#
+# [*service_ensure*]
+#   Ensure parameter to pass to the service resource we will create to run this
+#   instance.
+#
+# [*service_enable*]
+#   Enable parameter to pass to the service resource we will create to run this
+#   instance.
+#
+# [*https_port*]
+#   Port to listen for HTTPS requests on or false to disable.
+#
+# [*https_attributes*]
+#   Attributes to incorporate as-is into the https connector (if used).
+#   Default:  $::tomcat::params::https_attributes (will not result in a working
+#   system - needs keystore, etc)
+#
+# [*http_port*]
+#   Port to listen for HTTP requests on
+#
+# [*ajp_port*]
+#   Port to listen for AJP requests on or false to disable
+#
+# [*jmx_port*]
+#   Port to listen for JMX requests on or false to disable
+#
+# [*jmx_ssl*]
+#   Use SSL for JMX connections?
+#
+# [*jmx_authenticate*]
+#   Set true to force JMX connections to be authenticated
+#
+# [*jmx_password_file*]
+#   Supply a file to read JMX passwords from if using JMX and forcing 
+#   authentication   
+#
+# [*jmx_access_file*]
+#   Supply a file here with access rights if using JMX and authentication
+#
+# [*shutdown_port*]
+#   Port to listen for the shutdown command on
+#
+# [*unpack_wars*]
+#   Set true to unpack .war files found in the instance /webapps directory
+#
+# [*auto_deploy*]
+#   Set true to automatically deploy applications found in the instance 
+#   /webapps directory
+#
+# [*java_home*]
+#   Path to root of a JDK installation to use for this tomcat instance
+#
+# [*catalina_home*]
+#   Path to root of unpacked tomcat installation to use for this tomcat 
+#   instance
+#
+# [*java_opts*]
+#   Additional options to pass through to the java command we will run
+#   this instance with
+#
+# [*catalina_opts*]
+#   Additional options to pass through to the java command we will run
+#   this instance with
+#
+# [*instance_user*]
+#   User to run this tomcat instance as.  Won't be created here
+#
+# [*pid_file*]
+#   If supplied, full path to a file where we will save the PID of this tomcat
+#   instance
+#
+# [*instance_root_dir*]
+#   Directory to create all tomcat instances under on this node.  Created by
+#   the `::tomcat` class
+#
+# [*file_mode_regular*]
+#   Mode to use for 'normal' files
+#
+# [*file_mode_script*]
+#   Mode to use for scripts (other then the init script)
+#
+# [*file_mode_init*]
+#   Mode to use for the init script
+#
+# [*file_owner*]
+#   Non-writable directories and files will be owned by this user (except the
+#   init script)
+#
+# [*file_group*]
+#   Non-writable directories and files will be owned by this group
+#
+# [*major_version*]
+#   Identify the major version of tomcat that this instance will be running. 
+#   Eventually this will be used to switch between default configuration file
+#   templates.  For the moment, only 7 (the default) is supported.
+#
+# [*shared_lib_dir*]
+#   Location of the directory used for shared Java libraries on this node or
+#   false to disable this feature.  Must match the setting used when declaring
+#   the ::tomcat class
+#
+# [*endorsed_lib_dir*]
+#   Location of the directory used for endorsed Java libraries on this node or
+#   false to disable this feature.  Must match the setting used when declaring
+#   the ::tomcat class
+#
+# [*server_xml_jdbc*]
+#   XML fragment to incorporate into server.xml to enable any required JDBC 
+#   connections on this node
+#
+# [*context_xml_jdbc*]
+#   XML fragment to incorporate into context.xml to enable JDBC connections 
+#   defined in server.xml as required
+#
+# [*init_script_template*]
+#   Set to the location of your own template to use for building the init 
+#   script if the built-in version doesn't suit your needs
+#
+# [*setenv_sh_template*]
+#   Set to the location of your own template to use for building the setenv.sh
+#   file if the built-in version doesn't suit your needs
+#
+# [*server_xml_template*]
+#   Set to the location of your own template to use for building the server.xml 
+#   file if the built-in version doesn't suit your needs
+#
+# [*catalina_properties_template*]
+#   Set to the location of your own template to use for building the 
+#   catalina.properties file if the built-in version doesn't suit your needs
+#
+# [*context_xml_template*]
+#   Set to the location of your own template to use for building the context.xml
+#   file if the built-in version doesn't suit your needs
+#
+# [*logging_properties_template*]
+#   Set to the location of your own template to use for building the 
+#   logging.properties file if the built-in version doesn't suit your needs
+#
+# [*tomcat_users_xml_template*]
+#   Set to the location of your own template to use for building the 
+#   tomcat-users.xml file if the built-in version doesn't suit your needs
+#
+# [*web_xml_template*]
+#   Set to the location of your own template to use for building the web.xml
+#   file if the built-in version doesn't suit your needs
+#
+# [*log_dir*]
+#   Set an alternate log directory.  Note that all tomcat instances generate
+#   log files with the same filename, so you must come up with a naming 
+#   convention that allows each tomcat instance to have its own log directory
+
+# [*catalina_properties_extra_args*]
+#   Extra arguments to add to catalina.properties
+#
+# [*tomcat_extra_setenv_args*]
+#   Extra BASH script to add to the end of the setenv.sh script
+#
+# [*watch_tomcat*]
+#   If true, the service for this instance will subscribe to the file at 
+#   $catalina_home so that tomcat will be restarted if this file changes in
+#   any way (eg new version).  If true, the referenced file must exist in the
+#   catalog.  If false, no action will be taken if the file at $catalina_home 
+#   changes
+#
+# [*watch_java*]
+#   If true, the service for this instance will subscribe to the file at 
+#   $java_home so that tomcat will be restarted if this file changes in
+#   any way (eg new version).  If true, the referenced file must exist in the
+#   catalog.  If false, no action will be taken if the file at $java_home 
+#   changes
+
+# === Examples
+#
+# Provide some examples on how to use this type:
+#
+# see README.md
+#
+# === Authors
+#
+# Geoff Williams <geoff.williams@puppetlabs.com>
+#
+# === Copyright
+#
+# Copyright 2014 Puppet Labs, unless otherwise noted.
+#
 define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $service_enable = $::tomcat::params::service_enable,
                         $https_port = $::tomcat::params::https_port,

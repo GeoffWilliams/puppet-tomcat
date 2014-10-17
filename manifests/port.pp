@@ -1,5 +1,24 @@
-# Port is a dummy defined type to ensure that all ports are unique within
-# a given catalog
+# == Define: tomcat::port
+#
+# Dummy class used to enforce the rule of not being able to allocate the same
+# port more then once on a node
+# === Parameters
+#
+# [*namevar*]
+#   Port number to assign
+#
+# === Examples
+#
+# This class is used internally
+#
+# === Authors
+#
+# Geoff Williams <geoff.williams@puppetlabs.com>
+#
+# === Copyright
+#
+# Copyright 2014 Puppet Labs, unless otherwise noted.
+#
 define tomcat::port {
   include ::tomcat::params
 

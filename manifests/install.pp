@@ -1,39 +1,39 @@
-# == Class: tomcat
+# == Define: tomcat::install
 #
-# Full description of class tomcat here.
+# Installs the tomcat RPM and optionally symlinks it to a default location
 #
 # === Parameters
+# [*namevar*]
+#   Name of tomcat package to install (with yum)
 #
-# Document parameters here.
+# [*ensure*]
+#   `present` to install this version of tomcat, `absent` to remove.
 #
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
-#   e.g. "Specify one or more upstream ntp servers as an array."
+# [*$symlink_source*]
+#   If creating a symlink to this installation (`$symlink_target` set), create
+#   the symlink at this location.
 #
-# === Variables
+# [*symlink_target*]
+#   If set, attempt to create a symlink at `$symlink_source` pointing to the
+#   file specified here.
 #
-# Here you should define a list of variables that this module would require.
+# [*file_owner*]
+#   Owner of the symlink (if created)
 #
-# [*sample_variable*]
-#   Explanation of how this variable affects the funtion of this class and if
-#   it has a default. e.g. "The parameter enc_ntp_servers must be set by the
-#   External Node Classifier as a comma separated list of hostnames." (Note,
-#   global variables should be avoided in favor of class parameters as
-#   of Puppet 2.6.)
+# [*file_group*]
+#   Group of the symlink (if created)
 #
 # === Examples
 #
-#  class { tomcat:
-#    servers => [ 'pool.ntp.org', 'ntp.local.company.com' ],
-#  }
+# see README.md
 #
 # === Authors
 #
-# Author Name <author@domain.com>
+# Geoff Williams <geoff.williams@puppetlabs.com>
 #
 # === Copyright
 #
-# Copyright 2014 Your name here, unless otherwise noted.
+# Copyright 2014 Puppet Labs, unless otherwise noted.
 #
 define tomcat::install( $ensure = present,
                         $symlink_source = $::tomcat::params::catalina_home,

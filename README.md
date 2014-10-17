@@ -359,7 +359,8 @@ By default, the module creates files and directories with the following owners,
   log files and temporary storage
 * Regular files are all other files that puppet installs regarding tomcat
 
-_Default values_
+**Default values**
+
 The authorative default values of these fields are set in the `params.pp` file 
 and are currently:
 
@@ -602,11 +603,36 @@ just use the HTTP/1.1 connector.
 
 ## Reference
 
-*todo*
-Here, list the classes, types, providers, facts, etc contained in your module.
-This section should include all of the under-the-hood workings of your module so
-people know what the module is touching on their system but don't need to mess
-with things. (We are working on automating this section!)
+### Classes
+`tomcat`
+Sets up shared directories (if required) and loads the `tomcat::params` class
+into scope for use by the defined types.
+
+### Defined types
+`tomcat::install`
+Installs the tomcat RPM and optionally symlinks it to a default location
+
+`tomcat::instance`
+Create a tomcat instance on a node
+
+`tomcat::library`
+Installs or removes a shared/endorsed library from a node
+
+`tomcat::params`
+Shared class parameters
+
+`tomcat::port`
+Dummy class used to enforce the rule of not being able to allocate the same
+port more then once on a node
+
+### Rspec tests
+Comprehensive tests are available in the `spec` directory.
+
+```
+rake spec
+```
+
+To run tests
 
 ## Limitations
 

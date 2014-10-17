@@ -1,3 +1,43 @@
+# == Class: tomcat
+# Sets up shared directories (if required) and loads the `tomcat::params` class
+# into scope for use by the defined types.
+#
+# === Parameters
+# [*shared_lib_dir*]
+#   Directory to _create_ to store shared Java libraries in.  Set to false
+#   if you don't want this directory to be created.
+#
+# [*endorsed_lib_dir*]
+#   Directory to _create_ to store endorsed Java libraries in.  Set to false if
+#   you don't want this directory to be created.
+# 
+# [*instance_root_dir*]
+#   Directory to _creat_ to hold all of the individual tomcat instances.
+#
+# [*file_mode_regular*]
+#   File mode used to create all files within this manifest (used as a resource
+#   default)
+#
+# [*file_owner*]
+#   File owner used to create all files within this manifest (used as a resource
+#   default)
+#
+# [*file_group*]
+#   File group used to create all files within this manifest (used as a resource
+#   default)
+#
+# === Examples
+#
+# See README.me
+#
+# === Authors
+#
+# Geoff Williams <geoff.williams@puppetlabs.com>
+#
+# === Copyright
+#
+# Copyright 2014 Puppet Labs, unless otherwise noted.
+#
 class tomcat ($shared_lib_dir = $::tomcat::params::shared_lib_dir,
               $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir,
               $instance_root_dir = $::tomcat::params::instance_root_dir,
