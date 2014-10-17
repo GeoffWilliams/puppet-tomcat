@@ -40,6 +40,8 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
                         $log_dir = false,
                         $catalina_properties_extra_args = "",
                         $tomcat_extra_setenv_args = "",
+                        $watch_tomcat = true,
+                        $watch_java = true,
       ) { 
   include ::tomcat::params
 
@@ -244,23 +246,23 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
 
   # list of resources (trigger file) to watch if endorsed libs are in use
   if ($endorsed_lib_dir) {
-    $endorsed_lib_dir_watched = [ 
+    $endorsed_watched = [ 
       File[$endorsed_lib_trigger],
     ]
   } else {
-    $endorsed_lib_dir_watched = []
+    $endorsed_watched = []
   }
 
   # if shared libraries are in use, build the fragment to add to 
   # catalina.properties and add the trigger file to the list of watched
   # resources
   if ($shared_lib_dir) {
-    $shared_lib_dir_watched = [
+    $shared_watched = [
       File[$shared_lib_trigger]
     ]
     $shared_lib_cfg = "${shared_lib_dir},${shared_lib_dir}/*.jar,"
   } else {
-    $shared_lib_dir_watched = []
+    $shared_watched = []
     $shared_lib_cfg = ""
   }
 
@@ -270,22 +272,31 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   # are changed, puppet will restart tomcat for us.  This is good if (eg) we
   # installed tomcat at /usr/local/apache-tomcat and upgraded by changing
   # the symlink
-  if (defined(File[$catalina_home])) {
+  if ($watch_tomcat) {
     $tomcat_watched = [File[$catalina_home]]
   } else {
     $tomcat_watched = []
   }
-  if (defined(File[$java_home])) {
+  if ($watch_java) {
     $java_watched = [File[$java_home]]
   } else {
     $java_watched = []
   }
-  $install_watched = concat($tomcat_watched, $java_watched)
+#  $install_watched = concat($tomcat_watched, $java_watched)
 
   # concatenate all the watched resources to one array
-  $lib_watched = concat($endorsed_lib_dir_watched, $shared_lib_dir_watched)
-  $shared_watched = concat($lib_watched, $install_watched)
-  $watched = concat($basic_watched, $install_watched)
+#  $lib_watched = concat($endorsed_lib_dir_watched, $shared_lib_dir_watched)
+#  $shared_watched = concat($lib_watched, $install_watched)
+#  $watched = concat($basic_watched, $install_watched)
+
+  $watched = 
+    concat($basic_watched,
+      concat($endorsed_watched,
+        concat($shared_watched,
+          concat($tomcat_watched,$java_watched)
+        )
+      )
+    )
 
   # ensure ports are unique.  puppet takes care of this for us when we build 
   # the dependency graph.  Recall that type + title definitions must be unique 
