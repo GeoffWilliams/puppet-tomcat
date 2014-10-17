@@ -50,290 +50,149 @@ describe 'tomcat::instance', :type => :define do
   end
 
   # subscriptions
-  context "service restart shared_lib_dir trigger (default)" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
+  tests = {
+    "service restart shared_lib_dir trigger (default)" => {
+      "params" => {
         "http_port"      => 8080,
         "shutdown_port"  => 8088,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$def_shared_lib_trigger}]"
-      )
-    }
-  end
-  context "service restart shared_lib_dir trigger (off)" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
+      },
+      "subscribe" => $def_shared_lib_trigger,
+    },
+    "service restart shared_lib_dir trigger (off)" => {
+      "params" => {
         "http_port"      => 8080,
         "shutdown_port"  => 8088,
         "shared_lib_dir" => false,
-      }
-    end
-    it {
-      should_not contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$def_shared_lib_trigger}]"
-      )
-    }
-  end
-  context "service restart shared_lib_dir trigger (custom)" do
-    let :pre_condition do
-      <<-EOD
-      class { "tomcat":
-        shared_lib_dir => "#{$custom_shared_lib_dir}",
-      }
-
-      EOD
-    end
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
+      },
+      "no_subscribe" => $def_shared_lib_trigger,
+    },
+    "service restart shared_lib_dir trigger (custom)" => {
+      "pre_condition" => $custom_pre_condition,
+      "params" => {
         "http_port"      => 8080,
         "shutdown_port"  => 8088,
         "shared_lib_dir" => $custom_shared_lib_dir,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$custom_shared_lib_trigger}]"
-      )
-    }
-  end
-
-
-  context "service restart endorsed_lib_dir trigger (default)" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
+      },
+      "subscribe" => $custom_shared_lib_trigger,
+    },
+    "service restart endorsed_lib_dir trigger (default)" => {
+      "params" => {
         "http_port"      => 8080,
         "shutdown_port"  => 8088,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$def_endorsed_lib_trigger}]"
-      )
-    }
-  end
-  context "service restart endorsed_lib_dir trigger (off)" do
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
+      },
+      "subscribe" => $def_endorsed_lib_trigger,
+    },
+    "service restart endorsed_lib_dir trigger (off)" => {
+      "params" => {
         "http_port"        => 8080,
         "shutdown_port"    => 8088,
         "endorsed_lib_dir" => false,
-      }
-    end
-    it {
-      should_not contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$def_endorsed_lib_trigger}]"
-      )
-    }
-  end
-  context "service restart endorsed_lib_dir trigger (custom)" do
-    let :pre_condition do
-      <<-EOD
-      class { "tomcat":
-        endorsed_lib_dir => "#{$custom_endorsed_lib_dir}",
-      }
-
-      EOD
-    end
-
-    let :title do
-      "myapp"
-    end 
-    let :params do
-      {
+      },
+      "no_subscribe" => $def_endorsed_lib_trigger,
+    },
+    "service restart endorsed_lib_dir trigger (custom)" => {
+      "pre_condition" => $custom_pre_condition,
+      "params" => {
         "http_port"        => 8080,
         "shutdown_port"    => 8088,
         "endorsed_lib_dir" => $custom_endorsed_lib_dir,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$custom_endorsed_lib_trigger}]"
-      )
-    }
-  end
-
-  context "service restart java_home trigger (default)" do
-    let :pre_condition do
-      <<-EOD
-      class { "tomcat":}
-      file { "#{$def_java}":
-        ensure => file,
-      }
-      EOD
-    end
-
-    let :title do
-      "myapp"
-    end 
-    let :params do
-      {
-        "http_port"        => 8080,
-        "shutdown_port"    => 8088,
-        "watch_java"     => true,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$def_java}]"
-      )
-    }
-  end
-
-  context "service restart java_home trigger (custom/unmanaged)" do
-    let :pre_condition do
-      <<-EOD
-      class { "tomcat":}
-      file { "#{$custom_java}":
-        ensure => file,
-      }
-      EOD
-    end
-
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"        => 8080,
-        "shutdown_port"    => 8088,
-        "java_home"        => $custom_java,
-        "watch_java"     => true,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$custom_java}]"
-      )
-    }
-  end
-  context "service restart java_home trigger (off)" do
-    let :pre_condition do
-      <<-EOD
-      class { "tomcat":}
-      file { "#{$def_java}":
-        ensure => file,
-      }
-      EOD
-    end
-
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
-        "http_port"        => 8080,
-        "shutdown_port"    => 8088,
-        "watch_java"     => false,
-      }
-    end
-    it {
-      should_not contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$def_java}]"
-      )
-    }
-  end
-
-  context "service restart catalina_home trigger (default)" do
-    let :pre_condition do
-      <<-EOD
-      class { "tomcat":}
-      file { "#{$def_tomcat}":
-        ensure => file,
-      }
-      EOD
-    end
-
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
+      },
+      "subscribe" => $custom_endorsed_lib_trigger,
+    },
+    "service restart java_home trigger (default)" => {
+      "pre_condition" => $def_java_pre_condition,
+      "params" => {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "watch_java"    => true,
+      },
+      "subscribe" => $def_java,
+    },
+    "service restart java_home trigger (custom/unmanaged)" => {
+      "pre_condition" => $custom_java_pre_condition,
+      "params" => {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "java_home"     => $custom_java,
+        "watch_java"    => true,
+      },
+      "subscribe" => $custom_java,
+    },
+    "service restart java_home trigger (off)" => {
+      "pre_condition" => $def_java_pre_condition,
+      "params" => {
+        "http_port"     => 8080,
+        "shutdown_port" => 8088,
+        "watch_java"    => false,
+      },
+      "no_subscribe" => $def_java,
+    },
+    "service restart catalina_home trigger (default)" => {
+      "pre_condition" => $def_tomcat_pre_condition,
+      "params" => {
         "http_port"        => 8080,
         "shutdown_port"    => 8088,
         "watch_tomcat"     => true,
-      }
-    end
-    it {
-      should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$def_tomcat}]"
-      )
-    }
-  end
-
-  context "service restart catalina_home trigger (off)" do
-    let :pre_condition do
-      <<-EOD
-      class { "tomcat":}
-      file { "#{$def_tomcat}":
-        ensure => file,
-      }
-      EOD
-    end
-
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
+      },
+      "subscribe" => $def_tomcat,
+    },
+    "service restart catalina_home trigger (off)" => {
+      "pre_condition" => $def_tomcat_pre_condition,
+      "params" => {
         "http_port"        => 8080,
         "shutdown_port"    => 8088,
         "watch_tomcat"     => false,
-      }
-    end
-    it {
-      should_not contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$def_tomcat}]"
-      )
-    }
-  end
-
-  context "service restart catalina_home trigger (custom)" do
-    let :pre_condition do
-      <<-EOD
-      class { "tomcat":}
-      file { "#{$custom_tomcat}":
-        ensure => file,
-      }
-      EOD
-    end
-
-    let :title do
-      "myapp"
-    end
-    let :params do
-      {
+      },
+      "no_subscribe" => $def_tomcat,
+    },
+    "service restart catalina_home trigger (off)" => {
+      "pre_condition" => $def_tomcat_pre_condition,
+      "params" => {
+        "http_port"        => 8080,
+        "shutdown_port"    => 8088,
+        "watch_tomcat"     => false,
+      },
+      "no_subscribe" => $def_tomcat,
+    },
+    "service restart catalina_home trigger (custom)" => {
+      "pre_condition" => $custom_tomcat_pre_condition,
+      "params" => {
         "http_port"        => 8080,
         "shutdown_port"    => 8088,
         "catalina_home"    => $custom_tomcat,
         "watch_tomcat"     => true,
+      },
+      "subscribe" => $custom_tomcat,
+    },
+  }
+
+  tests.each do | test_name, test_data | 
+    context test_name do
+      let :pre_condition do
+        test_data.has_key?("pre_condition") ? 
+          test_data["pre_condition"] : $def_pre_condition
+      end
+      let :title do
+        $default_title
+      end
+      let :params do
+        test_data["params"]
+      end
+      it {
+        if test_data.has_key?("subscribe")
+          should contain_service("tomcat_myapp").that_subscribes_to(
+            "File[#{test_data["subscribe"]}]"
+          )
+        elsif test_data.has_key?("no_subscribe")
+          should_not contain_service("tomcat_myapp").that_subscribes_to(
+            "File[#{test_data["no_subscribe"]}]"
+          )
+        else
+          fail("test #{test_name} should supply subscribe/no_subscribe key")
+        end
       }
     end
-    it {
-      should contain_service("tomcat_myapp").that_subscribes_to(
-          "File[#{$custom_tomcat}]"
-      )
-    }
   end
-
-  
 
   #
   # major version

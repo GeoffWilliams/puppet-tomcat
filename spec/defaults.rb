@@ -48,4 +48,28 @@ $custom_pre_condition = <<-EOD
     endorsed_lib_dir => "#{$custom_endorsed_lib_dir}",
   }
 EOD
+$def_java_pre_condition = <<-EOD
+  class { "tomcat":}
+    file { "#{$def_java}":
+      ensure => file,
+  }
+EOD
+$custom_java_pre_condition = <<-EOD
+  class { "tomcat":}
+    file { "#{$custom_java}":
+      ensure => file,
+  }
+EOD
+$def_tomcat_pre_condition = <<-EOD
+  class { "tomcat":}
+  file { "#{$def_tomcat}":
+    ensure => file,
+  }
+EOD
+$custom_tomcat_pre_condition = <<-EOD
+  class { "tomcat":}
+  file { "#{$custom_tomcat}":
+    ensure => file,
+  }
+EOD
 
