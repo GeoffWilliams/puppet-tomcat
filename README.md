@@ -380,6 +380,10 @@ unpredictable mix of explict and default permissions.
 | `file_mode_init`    |        |                 | YES              |                 |
 | `instance_user`     |        |                 | YES              |                 |
 
+* `file_mode` and `file_group` only change the ownership of the symlink to the
+  default tomcat version when used with tomcat::install.  It is up to the RPM
+  package to set suitable permissions for the files under `$CATALINA_HOME` when 
+  packaging tomcat.
 
 ### Choose your own installation directories
 By default, the module installs to the following main directories:
