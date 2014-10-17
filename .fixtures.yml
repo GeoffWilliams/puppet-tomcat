@@ -1,6 +1,9 @@
 fixtures:
   forge_modules:
     staging:
+      repo: "nanliu-staging"
+      ref: "1.0.0"
+    stdlib:
       repo: "puppetlabs-stdlib"
       ref: "4.1.0"
   symlinks:

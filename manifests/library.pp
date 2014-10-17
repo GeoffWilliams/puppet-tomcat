@@ -1,6 +1,6 @@
 define tomcat::library( $ensure = present,
-                        $download_site,
-                        $endorsed = false,
+                        $download_site = "",
+                        $lib_type = "shared",
                         $shared_lib_dir = $::tomcat::params::shared_lib_dir,
                         $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir, ) { 
   $filename = $title
@@ -9,30 +9,41 @@ define tomcat::library( $ensure = present,
   $shared_lib_trigger = "${shared_lib_dir}/${::tomcat::params::trigger_file}"
   $endorsed_lib_trigger = "${endorsed_lib_dir}/${::tomcat::params::trigger_file}"
 
-
-  if ($endorsed) {
-    validate_absolute_path($endorsed_lib_dir)
-    $local_file = "${endorsed_lib_dir}/$filename"
-    $trigger_file = $endorsed_lib_trigger
-  } else {
-    validate_absolute_path($shared_lib_dir)
-    $local_file = "${shared_lib_dir}/$filename"
-    $trigger_file = $shared_lib_trigger
+  case ($lib_type) {
+    "shared": {
+      validate_absolute_path($shared_lib_dir)
+      $local_file = "${shared_lib_dir}/$filename"
+      $trigger_file = $shared_lib_trigger
+    }
+    "endorsed": {
+      validate_absolute_path($endorsed_lib_dir)
+      $local_file = "${endorsed_lib_dir}/$filename"
+      $trigger_file = $endorsed_lib_trigger
+    }
+    default : {
+      fail("lib_type '${lib_type}' not supported, try 'shared' or 'endorsed'")
+    }
   }
-
   # just incase someone passed a string with strange chars...
   validate_absolute_path($local_file)
-
-  if ($ensure == present) {
-    staging::file { $filename:
-      source => $download_url,
-      target => $local_file,
-      notify => Exec[$trigger_title],
+  
+  case ($ensure) {
+    present: {
+      validate_string($download_site)
+      staging::file { $filename:
+        source => $download_url,
+        target => $local_file,
+        notify => Exec[$trigger_title],
+      }
     }
-  } else {
-    file { $local_file:
-      ensure => absent,
-      notify => Exec[$trigger_title],
+    absent: {
+      file { $local_file:
+        ensure => absent,
+        notify => Exec[$trigger_title],
+      }
+    }
+    default: {
+      fail("ensure=>${ensure} not supported, try present or absent")
     }
   }
 
