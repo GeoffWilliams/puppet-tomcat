@@ -80,6 +80,7 @@ You must create the user(s) to run any required tomcat instances yourself.  By
 default, this module expects a user called `tomcat` which you could create like
 this:
 
+```
   user { "tomcat":
     ensure => present,
     home   => "/var/tomcat",
@@ -89,6 +90,7 @@ this:
   group { "tomcat":
     ensure => present,
   }
+```
 
 If wanting to use this module to install shared/endorsed libraries, you must 
 put the .jar files somewhere Puppet can download them from.  An HTTP server is
@@ -101,14 +103,18 @@ ideal for this purpose.
 The code snippits below will give you a functional tomcat instance.  Don't 
 forget to have the [Setup Requirements](#setup-requirements) in place first
 
+```
   class { "::tomcat":}
+```
 
 Setup directories for shared and endorsed libraries, load variables used by
 other manifests into memory
 
+```
   ::tomcat::install { "myvendor-apache-tomcat-7.0.56":
     symlink_target => "/usr/local/apache-tomcat-7.0.56",
   }
+```
 
 Use yum to install a copy of "myvendor-apache-tomcat-7.0.56" and create a
 symlink from `/usr/local/apache-tomcat` to `/usr/local/apache-tomcat-7.0.56`
@@ -116,10 +122,12 @@ symlink from `/usr/local/apache-tomcat` to `/usr/local/apache-tomcat-7.0.56`
 The file at `/usr/local/apache-tomcat-7.0.56` is created by the installation of
 the RPM package.
 
+```
   ::tomcat::instance { "main":
     http_port     => 8080,
     shutdown_port => 8009,
   }
+```
 
 Create a tomcat instance called `main` running on port 8080 under the `tomcat`
 user.
@@ -149,9 +157,11 @@ simultaneously, you just have to remember to choose different ports to run them
 on.  If you mess up the port assignments by allocating the same port more then
 once, you will get an error from Puppet that looks like this:
 
+```
   Error: Could not retrieve catalog from remote server: Error 400 on SERVER: Duplicate declaration: Tomcat::Port[8080] is already declared in file /etc/puppetlabs/puppet/modules/tomcat/manifests/instance.pp:310; cannot redeclare at /etc/puppetlabs/puppet/modules/tomcat/manifests/instance.pp:321 on node agent-0.puppetlabs.vm
   Warning: Not using cache on failed catalog
   Error: Could not retrieve catalog; skipping run
+```
 
 This protects you from destroying working Tomcat installations by trying to
 re-allocate the port.  To resolve this error, simply make sure that each port 
@@ -171,6 +181,7 @@ comprehensive information.
 You can run each tomcat instance as a different user if you want to provide 
 better protection and separation of sensitive data.  
 
+```
   ::tomcat::instance { "myapp1":
     http_port     => 8080,
     shutdown_port => 8009,
@@ -182,6 +193,7 @@ better protection and separation of sensitive data.
     shutdown_port => 8010,
     instance_user => "myapp2"
   }
+```
 
 In the above example, tomcat will run the first instance as the user `myapp1` 
 and the second instance as `myapp2`.  Note that you must create any users and 
@@ -199,9 +211,11 @@ to libraries such as XML parsers (must be put in 'endorsed') and database driver
 Libraries are preserved across upgrades and once installed are available to all 
 Tomcat intances managed by this module automatically
 
+```
   ::tomcat::library { "postgresql-9.3-1102.jdbc41.jar":
     download_site => "http://172.16.1.101",
   }
+```
 
 The above example would attempt to download the postgres database driver from a
 web server running at `http://172.16.1.101`.  Once installed, all running tomcat 
@@ -209,19 +223,23 @@ instances managed by this module will be restarted so they can use the new libra
 
 Libraries can also be removed by setting the `ensure` parameter to `absent`:
 
+```
   ::tomcat::library { "postgresql-9.3-1102.jdbc41.jar":
     ensure => absent,
   }
+```
 
 Tomcat will also be restarted after libraries are removed.
 
 Endorsed libraries are installed/removed in exactly the same way by setting the
 parameter `lib_type` to `endorsed`, for example:
 
+```
   ::tomcat::library { "jaxb-impl-2.2.3.jar":
     download_site => "http://172.16.1.101",
     lib_type      => "endorsed",
   }
+```
 
 ### JNDI/JDBC support
 
@@ -238,6 +256,7 @@ Rather then keeping these XML fragments in the puppet manifests, its a good
 idea to keep them separate using hiera, which could look something like this for
 an Oracle data source:
 
+```
   ---
   tomcat:instance:main:server_xml_jdbc: |
     <Resource name="jdbc/application"
@@ -260,12 +279,13 @@ an Oracle data source:
     <ResourceLink name="jdbc/application"
               global="jdbc/application"
               type="javax.sql.DataSource"/>
-
+```
 
 The manifest (for your tomcat [role...?](http://garylarizza.com/blog/2014/02/17/puppet-workflow-part-2/)) would then lookup pass the XML 
 fragments to the tomcat instance and the relevant section will be included in
 the `server.xml` and `context.xml` files.
 
+```
   $server_xml_jdbc = hiera("tomcat:instance:main:server_xml_jdbc")
   $context_xml_jdbc = hiera("tomcat:instance:main:context_xml_jdbc")
 
@@ -275,6 +295,7 @@ the `server.xml` and `context.xml` files.
     server_xml_jdbc  => $server_xml_jdbc,
     context_xml_jdbc => $context_xml_jdbc,
   }
+```
 
 *Don't forget to install the database driver!*
 
@@ -289,6 +310,7 @@ comprehensive documentation in the tomcat [SSL HOW-TO](http://tomcat.apache.org/
 It's a good idea to put the required SSL attributes in your node's hiera file
 like this:
 
+```
   ---
   # all of the attributes from the SSL-HOWTO *except* the port
   :tomcat:instance:main:ssl_attributes: |
@@ -297,9 +319,11 @@ like this:
      scheme="https" secure="true" SSLEnabled="true"
      keystoreFile="${user.home}/.keystore" keystorePass="changeit"
      clientAuth="false" sslProtocol="TLS"
+```
 
 So that you have easy access to them in your manifests:
 
+```
   $https_attributes = hiera(":tomcat:instance:main:ssl_attributes:")
 
   ::tomcat::instance { "main":
@@ -308,6 +332,7 @@ So that you have easy access to them in your manifests:
     https_port       => 8081,
     https_attributes => $https_attributes,
   }
+```
 
 *If it doesn't work, make sure your keystore is created and readable and that 
 you haven't specified the connector port more then once*
@@ -338,12 +363,14 @@ _Default values_
 The authorative default values of these fields are set in the `params.pp` file 
 and are currently:
 
+```
   $file_mode_regular = "0640"
   $file_mode_script  = "0750"
   $file_mode_init    = "0755"
   $file_owner        = "root"
   $file_group        = "tomcat"
   $instance_user     = "tomcat"
+```
 
 Don't forget that when the Puppet agent runs, it will "add one" to directories
 which have the read bit set, so directories created with a `$file_mode_regular` 
@@ -385,6 +412,7 @@ Say we wanted to install a tomcat on a node at the following locations instead:
 
 We could do that like this:
 
+```
   # set the system-wide locations for this node
   class { "::tomcat":
     instance_root_dir => "/home/tomcat",
@@ -403,6 +431,7 @@ We could do that like this:
     shared_lib_dir   => "/home/tomcat/lib",
     endorsed_lib_dir => "/home/tomcat/endorsed",
   }
+```
 
 It's also possible to disable system-wide shared/endorsed libraries by setting 
 the `shared_lib_dir` or `endorsed_lib_dir` parameter to false on the tomcat 
@@ -418,6 +447,7 @@ substitute any or all of them via the `::tomcat::instance` resource
 
 eg:
 
+```
   ::tomcat::instance { "main":
     http_port                    => 8080,
     shutdown_port                => 8009,
@@ -429,6 +459,7 @@ eg:
     logging_properties_template  => "myorg_tomcat/logging.properties.erb",
     tomcat_users_xml_template    => "myorg_tomcat/tomcat-users.xml.erb",
     web_xml_template             => "myorg_tomcat/web.xml.erb"
+```
 
 In this imaginary scenario, we have replaced the default templates with our own 
 from a module we have made ourselves called `myorg_tomcat`.  Recall that 
@@ -441,12 +472,13 @@ By default, any `.war` files found in the `webapps` directory of an instance
 will be unpacked and deployed.  If you don't want this to happen, you can turn
 this behavour off:
 
+```
   ::tomcat::instance { "main":
     http_port     => 8080,
     shutdown_port => 8009,
     unpack_wars   => false,
     auto_deploy   => flase,
-
+```
 
 ### Side-by-side installation of multiple apache-tomcat packages
 
@@ -458,10 +490,12 @@ install.
 
 eg:
 
+```
   ::tomcat::install { "myorg-apache-tomcat-7.0.55": 
     symlink_target => "/usr/local/apache-tomcat-7.0.55"
   }
   ::tomcat::install { "myorg-apache-tomcat-7.0.56": } 
+```
   
 In this example, we installed two tomcat versions and set the older version
 7.0.55 to be the default by supplying the `symlink_target` parameter.  We have
@@ -475,11 +509,13 @@ parameter.
 
 eg:
 
+```
   ::tomcat::instance { "main":
     http_port     => 8080,
     shutdown_port => 8009,
     java_home     => "/usr/java/jdk1.7.0_67",
   }
+```
 
 Would force this Tomcat instance to run Java from `/usr/java/jdk1.7.0_67`
 
@@ -492,11 +528,13 @@ To make a tomcat instance use a specific version of Apache Tomcat, set it's
 
 eg:
 
+```
   ::tomcat::instance { "main":
     http_port     => 8080,
     shutdown_port => 8009,
     catalina_home => "/usr/local/apache-tomcat-7.0.56",
   }
+```
 
 Would force this tomcat instance to run Tomcat from `/usr/local/apache-tomcat-7.0.56`
 
@@ -507,9 +545,11 @@ to `absent` on the `::tomcat::install` resource you want to get rid of.
 
 eg:
 
+```
   ::tomcat::install { "myorg-apache-tomcat-7.0.40": 
     ensure => absent
   }
+```
 
 Would remove tomcat 7.0.40 from the system
 
@@ -526,11 +566,13 @@ on.
 
 eg:
 
+```
   ::tomcat::instance { "main":
     http_port     => 8080,
     shutdown_port => 8009,
     jmx_port      => 6666,
   }
+```
 
 Would start an un-authenticated listener on port 6666.  If you need 
 authentication and/or SSL, read the ::tomcat::instance documentation inside
@@ -545,11 +587,13 @@ port you want to listen on.
 
 eg:
 
+```
   ::tomcat::instance { "main":
     http_port     => 8080,
     shutdown_port => 8009,
     ajp_port      => 8005,
   }
+```
 
 Would start an AJP listener on port 8005.
 
