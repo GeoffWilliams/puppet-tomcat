@@ -37,7 +37,9 @@
 #
 define tomcat::install( $ensure = present,
                         $symlink_source = $::tomcat::params::catalina_home,
-                        $symlink_target = false,) {
+                        $symlink_target = false,
+                        $file_owner = $::tomcat::params::file_owner,
+                        $file_group = $::tomcat::params::file_group,) {
   include ::tomcat::params
 
   if (!($::osfamily in $::tomcat::params::supported_os)) {
@@ -46,6 +48,11 @@ define tomcat::install( $ensure = present,
 
   if ! defined(Class['tomcat']) {
     fail('You must include the tomcat base class before using any tomcat defined resources')
+  }
+
+  File {
+    owner => $file_owner,
+    group => $file_group,
   }
   
 

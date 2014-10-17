@@ -116,6 +116,35 @@ describe 'tomcat::library', :type => :define do
       "target"  => $custom_endorsed_lib_target,
       "trigger" => $custom_endorsed_lib_trigger,
     },
+
+    # test custom owner/group/mode (shared)
+    "ensure=>present (shared,default location,custom o/g/m)" => {
+      "params" => {
+          "ensure"            => "present",
+          "lib_type"          => "shared",
+          "download_site"     => "http://localhost/",
+          "file_owner"        => $custom_file_owner,
+          "file_group"        => $custom_file_group,
+          "file_mode_regular" => $custom_file_mode_regular,
+      },
+      "target"  => $def_shared_lib_target,
+      "trigger" => $def_shared_lib_trigger,
+    },
+  
+    # test custom owner/group/mode (endorsed)
+    "ensure=>present (endorsed,default location,custom o/g/m)" => {
+      "params" => {
+          "ensure"            => "present",
+          "lib_type"          => "endorsed",
+          "download_site"     => "http://localhost/",
+          "file_owner"        => $custom_file_owner,
+          "file_group"        => $custom_file_group,
+          "file_mode_regular" => $custom_file_mode_regular,
+      },
+      "target"  => $def_endorsed_lib_target,
+      "trigger" => $def_endorsed_lib_trigger,
+    },
+
   }
 
   tests.each do | test_name, test_data |
@@ -140,6 +169,28 @@ describe 'tomcat::library', :type => :define do
           should contain_staging__file($lib_name).with(
             "target" => test_data["target"],
           )
+
+          # check tomcat would restart if ownership or perms changes
+          should contain_file(test_data["target"]).that_notifies(
+            "Exec[#{$exec_trigger_title}]"
+          )
+          # owner/group/permissions check if creating files
+          if test_data["params"].has_key?("file_owner")
+            # non-default file owner selected, trigger testing for custom values
+            should contain_file(test_data["target"]).with(
+              "ensure" => "file",
+              "owner"  => $custom_file_owner,
+              "group"  => $custom_file_group,
+              "mode"   => $custom_file_mode_regular,
+            )
+          else
+            should contain_file(test_data["target"]).with(
+              "ensure" => "file",
+              "owner"  => $def_file_owner,
+              "group"  => $def_file_group,
+              "mode"   => $def_file_mode_regular,
+            )
+          end
         else
           # check file scheduled for deltion
           should contain_file(test_data["target"]).with(

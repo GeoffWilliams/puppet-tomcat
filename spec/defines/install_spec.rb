@@ -52,7 +52,7 @@ describe 'tomcat::install', :type => :define do
     }
   end
 
-  context "symlink_source works" do
+  context "symlink_source works (default o/g)" do
     let :title do
       "custom-apache-tomcat-7.0.55-1-1"
     end
@@ -66,6 +66,8 @@ describe 'tomcat::install', :type => :define do
       should contain_file("/foobar").with(
         "ensure"   => "link",
         "target"   => "/baz",
+        "owner"    => $def_file_owner,
+        "group"    => $def_file_group,
       )
     }
   end
@@ -77,12 +79,16 @@ describe 'tomcat::install', :type => :define do
     let :params do
       {
         "symlink_target" => "/baz",
+        "file_owner"     => $custom_file_owner,
+        "file_group"     => $custom_file_group,
       }
     end
     it {
       should contain_file($def_tomcat).with(
         "ensure"   => "link",
         "target"   => "/baz",
+        "owner"    => $custom_file_owner,
+        "group"    => $custom_file_group,
       )
     }
   end

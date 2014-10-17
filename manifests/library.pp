@@ -2,12 +2,26 @@ define tomcat::library( $ensure = present,
                         $download_site = "",
                         $lib_type = "shared",
                         $shared_lib_dir = $::tomcat::params::shared_lib_dir,
-                        $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir, ) { 
+                        $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir,
+                        $file_owner = $::tomcat::params::file_owner,
+                        $file_group = $::tomcat::params::file_group,
+                        $file_mode_regular = $::tomcat::params::file_mode_regular ) {
+
 
   if (!($::osfamily in $::tomcat::params::supported_os)) {
     fail($::tomcat::params::unsupported_os_msg)
   }
 
+  if ! defined(Class['tomcat']) {
+    fail('You must include the tomcat base class before using any tomcat defined resources')
+  }
+
+
+  File {
+    owner => $file_owner,
+    group => $file_group,
+    mode  => $file_mode_regular,
+  }
 
   $filename = $title
   $download_url = "${download_site}/${filename}"
@@ -40,6 +54,16 @@ define tomcat::library( $ensure = present,
         source => $download_url,
         target => $local_file,
         notify => Exec[$trigger_title],
+      }
+      
+      # fix permissions on files placed by staging::file
+      file { $local_file:
+        ensure  => file,
+        owner   => $file_owner,
+        group   => $file_group,
+        mode    => $file_mode_regular,
+        require => Staging::File[$filename],
+        notify  => Exec[$trigger_title],
       }
     }
     absent: {
