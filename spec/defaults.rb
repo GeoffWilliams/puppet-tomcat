@@ -36,3 +36,7 @@ $default_params = {
   "shutdown_port" => 8088,
 }
 $default_title = "myapp"
+$def_shared_lib_target = "#{$def_shared_lib_dir}/#{$lib_name}"
+$custom_shared_lib_target = "#{$custom_shared_lib_dir}/#{$lib_name}"
+$def_endorsed_lib_target = "#{$def_endorsed_lib_dir}/#{$lib_name}"
+$custom_endorsed_lib_target = "#{$custom_endorsed_lib_dir}/#{$lib_name}"
