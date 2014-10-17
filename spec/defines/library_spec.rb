@@ -4,6 +4,25 @@ describe 'tomcat::library', :type => :define do
   let :pre_condition do
     'class { "tomcat": }'
   end
+  let :facts do
+    {
+      :osfamily => "RedHat",
+    }
+  end
+  context "fails on non-redhat os family" do
+    let :facts do
+      {
+        :osfamily => "debian",
+      }
+    end
+    let :title do
+      $lib_name
+    end
+    it {
+      expect { subject }.to raise_error(/only supports the RedHat/)
+    }
+  end
+
 
   tests = {
     # install a shared library to default location

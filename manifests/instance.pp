@@ -45,6 +45,10 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
       ) { 
   include ::tomcat::params
 
+  if (!($::osfamily in $::tomcat::params::supported_os)) {
+    fail($::tomcat::params::unsupported_os_msg)
+  }
+
   if ! defined(Class['tomcat']) {
     fail('You must include the tomcat base class before using any tomcat defined resources')
   }

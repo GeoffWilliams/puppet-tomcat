@@ -6,6 +6,11 @@ class tomcat ($shared_lib_dir = $::tomcat::params::shared_lib_dir,
               $file_group = $::tomcat::params::file_group,
         ) inherits ::tomcat::params {
 
+  if (! ($::osfamily in $::tomcat::params::supported_os)) {
+    fail($::tomcat::params::unsupported_os_msg)
+  }
+
+
   $endorsed_lib_trigger = "${endorsed_lib_dir}/${::tomcat::params::trigger_file}"
   $shared_lib_trigger = "${shared_lib_dir}/${::tomcat::params::trigger_file}"
 

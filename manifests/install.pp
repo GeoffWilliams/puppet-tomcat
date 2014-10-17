@@ -40,6 +40,10 @@ define tomcat::install( $ensure = present,
                         $symlink_target = false,) {
   include ::tomcat::params
 
+  if (!($::osfamily in $::tomcat::params::supported_os)) {
+    fail($::tomcat::params::unsupported_os_msg)
+  }
+
   if ! defined(Class['tomcat']) {
     fail('You must include the tomcat base class before using any tomcat defined resources')
   }

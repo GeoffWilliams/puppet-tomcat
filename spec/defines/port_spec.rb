@@ -1,5 +1,25 @@
 require 'spec_helper'
 describe 'tomcat::port', :type => :define do
+  let :facts do
+    {
+      :osfamily => "RedHat",
+    }
+  end
+
+  context "fails on non-redhat os family" do
+    let :facts do
+      {
+        :osfamily => "debian",
+      }
+    end
+    let :title do
+      "6666"
+    end
+    it {
+      expect { subject }.to raise_error(/only supports the RedHat/)
+    }
+  end
+
 
   context "low int" do
     let :title do

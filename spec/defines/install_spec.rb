@@ -4,6 +4,26 @@ describe 'tomcat::install', :type => :define do
   let :pre_condition do
     'class { "tomcat": }'
   end
+  let :facts do
+    {
+      :osfamily => "RedHat",
+    }
+  end
+
+  context "fails on non-redhat os family" do
+    let :facts do
+      {
+        :osfamily => "debian",
+      }
+    end
+    let :title do
+      "custom-apache-tomcat-7.0.55-1-1"
+    end
+    it {
+      expect { subject }.to raise_error(/only supports the RedHat/)
+    }
+  end
+
 
   context "named package installs" do
     let :title do

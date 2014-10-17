@@ -117,4 +117,10 @@ class tomcat::params {
   $tomcat_users_xml_template = "tomcat-users.xml.erb"
   $web_xml = "/conf/web.xml"
   $web_xml_template = "web.xml.erb"
+
+  $supported_os = [
+    "RedHat"
+  ]
+  
+  $unsupported_os_msg = "This Java module only supports the RedHat OS family"
 }

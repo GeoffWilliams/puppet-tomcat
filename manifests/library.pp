@@ -3,6 +3,12 @@ define tomcat::library( $ensure = present,
                         $lib_type = "shared",
                         $shared_lib_dir = $::tomcat::params::shared_lib_dir,
                         $endorsed_lib_dir = $::tomcat::params::endorsed_lib_dir, ) { 
+
+  if (!($::osfamily in $::tomcat::params::supported_os)) {
+    fail($::tomcat::params::unsupported_os_msg)
+  }
+
+
   $filename = $title
   $download_url = "${download_site}/${filename}"
   $trigger_title = "trigger_${filename}"
