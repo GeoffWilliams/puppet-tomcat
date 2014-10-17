@@ -57,7 +57,7 @@ class tomcat::params {
   $catalina_out = "catalina.out"
 
   # directory to build tomcat instance's ($CATALINA_BASE's) under
-  $instance_root_dir = "/var/lib/tomcat"
+  $instance_root_dir = "/var/tomcat"
 
 
   # List of directories to create for each tomcat instance

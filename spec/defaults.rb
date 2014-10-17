@@ -1,6 +1,6 @@
 $trigger_file = "reload_tomcat"
 $lib_name = "libfoo.jar"
-$instances = "/var/lib/tomcat"
+$instances = "/var/tomcat"
 $custom_endorsed_lib_dir = "/foo_endorsed"
 $custom_endorsed_lib_trigger = "#{$custom_endorsed_lib_dir}/#{$trigger_file}"
 $custom_file_group = "tomcat_group"
