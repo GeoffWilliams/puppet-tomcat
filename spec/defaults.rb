@@ -40,3 +40,12 @@ $def_shared_lib_target = "#{$def_shared_lib_dir}/#{$lib_name}"
 $custom_shared_lib_target = "#{$custom_shared_lib_dir}/#{$lib_name}"
 $def_endorsed_lib_target = "#{$def_endorsed_lib_dir}/#{$lib_name}"
 $custom_endorsed_lib_target = "#{$custom_endorsed_lib_dir}/#{$lib_name}"
+
+$def_pre_condition = 'class { "tomcat": }'
+$custom_pre_condition = <<-EOD
+  class { "tomcat":
+    shared_lib_dir   => "#{$custom_shared_lib_dir}",
+    endorsed_lib_dir => "#{$custom_endorsed_lib_dir}",
+  }
+EOD
+

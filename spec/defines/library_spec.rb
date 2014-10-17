@@ -5,15 +5,6 @@ describe 'tomcat::library', :type => :define do
     'class { "tomcat": }'
   end
 
-  def_pre_condition = 'class { "tomcat": }'
-  custom_pre_condition = <<-EOD
-    class { "tomcat":
-      shared_lib_dir   => "#{$custom_shared_lib_dir}",
-      endorsed_lib_dir => "#{$custom_endorsed_lib_dir}",
-    }
-  EOD
-
-
   tests = {
     # install a shared library to default location
     "ensure=>present (shared,default)" => {
@@ -28,7 +19,7 @@ describe 'tomcat::library', :type => :define do
 
     # install a shared library to custom location
     "ensure=>present (shared,custom)" => {
-      "pre_condition" => custom_pre_condition,
+      "pre_condition" => $custom_pre_condition,
       "params" => {
         "ensure"         => "present",
         "lib_type"       => "shared",
@@ -52,7 +43,7 @@ describe 'tomcat::library', :type => :define do
 
     # install an endorsed library to custom location
     "ensure=>present (endorsed,custom)" => {
-      "pre_condition" => custom_pre_condition,
+      "pre_condition" => $custom_pre_condition,
       "params" => {
         "ensure"           => "present",
         "lib_type"         => "endorsed",
@@ -75,7 +66,7 @@ describe 'tomcat::library', :type => :define do
     
     # remove a shared library from custom location
     "ensure=>absent (shared,custom)" => {
-      "pre_condition" => custom_pre_condition,
+      "pre_condition" => $custom_pre_condition,
       "params" => {
         "ensure"         => "absent",
         "lib_type"       => "shared",
@@ -97,7 +88,7 @@ describe 'tomcat::library', :type => :define do
 
     # remove an endorsed library from custom location
     "ensure=>absent (endorsed,custom)" => {
-      "pre_condition" => custom_pre_condition,
+      "pre_condition" => $custom_pre_condition,
       "params" => {
         "ensure"           => "absent",
         "lib_type"         => "endorsed",
@@ -116,7 +107,7 @@ describe 'tomcat::library', :type => :define do
       #     undefined method `[]' for nil:NilClass
       let :pre_condition do
         test_data.has_key?("pre_condition") ? 
-          test_data["pre_condition"] : def_pre_condition
+          test_data["pre_condition"] : $def_pre_condition
       end
       let :title do
         $lib_name
