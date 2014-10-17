@@ -190,6 +190,21 @@ describe 'tomcat::instance', :type => :define do
         else
           fail("test #{test_name} should supply subscribe/no_subscribe key")
         end
+
+        # test the built-in files also cause a restart
+        [ "/etc/init.d/tomcat_myapp",
+          "#{$instances}/myapp/bin/setenv.sh",
+          "#{$instances}/myapp/conf/catalina.properties",
+          "#{$instances}/myapp/conf/context.xml",
+          "#{$instances}/myapp/conf/logging.properties",
+          "#{$instances}/myapp/conf/server.xml",
+          "#{$instances}/myapp/conf/tomcat-users.xml",
+          "#{$instances}/myapp/conf/web.xml" ].each do | subscribed_file |
+
+          should contain_service("tomcat_myapp").that_subscribes_to(
+            "File[#{subscribed_file}]"
+          )
+        end
       }
     end
   end
