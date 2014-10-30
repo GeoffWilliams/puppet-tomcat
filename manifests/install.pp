@@ -100,9 +100,10 @@ define tomcat::install( $ensure = present,
         }
 
         package { $package:
-          ensure => present,
-          source => $local_file,
-          require => Staging::File[$package],
+          ensure   => present,
+          provider => "rpm",
+          source   => $local_file,
+          require  => Staging::File[$package],
         }
       } else {
         package { $package:
