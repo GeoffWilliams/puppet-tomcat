@@ -88,31 +88,33 @@ define tomcat::install( $ensure = present,
     }
   }
 
-  $package = $title
-  $local_file = "${local_dir}/${package}"
+  $rpm_file = $title
+  $local_file = "${local_dir}/${rpm_file}"
+  $rpm_name = regsubst($rpm_file, '\.rpm', '')
+
 
   case $ensure {
     present: {
       if ($download_site) {
-        staging::file { $package:
-          source => "${download_site}/${package}",
+        staging::file { $rpm_file:
+          source => "${download_site}/${rpm_file}",
           target => $local_file,
         }
 
-        package { $package:
+        package { $rpm_name:
           ensure   => present,
           provider => "rpm",
           source   => $local_file,
-          require  => Staging::File[$package],
+          require  => Staging::File[$rpm_file],
         }
       } else {
-        package { $package:
+        package { $rpm_name:
           ensure => present,
         }
       }
     }
     absent: {
-      package { $package:
+      package { $rpm_name:
         ensure => absent,
       }
     }
