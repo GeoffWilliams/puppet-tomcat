@@ -23,6 +23,13 @@
 # [*file_group*]
 #   Group of the symlink (if created)
 #
+# [*download_site*]
+#   Pass a location to download RPMs from using nanliu-staging (http/https/
+#   ftp..).  If false (the default), RPMs will be sourced from whatever RPM
+#   repositories you have enabled
+#
+# [*local_dir*]
+#   If downloading RPMs manually, files will be saved to this directory
 # === Examples
 #
 # see README.md
@@ -39,7 +46,9 @@ define tomcat::install( $ensure = present,
                         $symlink_source = $::tomcat::params::catalina_home,
                         $symlink_target = false,
                         $file_owner = $::tomcat::params::file_owner,
-                        $file_group = $::tomcat::params::file_group,) {
+                        $file_group = $::tomcat::params::file_group,
+                        $download_site = false,
+                        $local_dir = $::tomcat::params::local_dir) {
   include ::tomcat::params
 
   if (!($::osfamily in $::tomcat::params::supported_os)) {
@@ -50,9 +59,20 @@ define tomcat::install( $ensure = present,
     fail('You must include the tomcat base class before using any tomcat defined resources')
   }
 
+  validate_absolute_path($local_dir)
+
   File {
     owner => $file_owner,
     group => $file_group,
+  }
+  
+  if (! defined(File[$local_dir])) {
+    file { $local_dir:
+      ensure => directory,
+      owner  => "root",
+      group  => "root",
+      mode   => "0755",
+    }
   }
   
 
@@ -69,9 +89,34 @@ define tomcat::install( $ensure = present,
   }
 
   $package = $title
+  $local_file = "${local_dir}/${package}"
 
-  package { $package:
-    ensure => $ensure,
+  case $ensure {
+    present: {
+      if ($download_site) {
+        staging::file { $package:
+          source => "${download_site}/${package}",
+          target => $local_file,
+        }
+
+        package { $package:
+          ensure => present,
+          source => $local_file,
+          require => Staging::File[$package],
+        }
+      } else {
+        package { $package:
+          ensure => present,
+        }
+      }
+    }
+    absent: {
+      package { $package:
+        ensure => absent,
+      }
+    }
+    default: { 
+      fail("ensure '${ensure}' unsupported in tomcat::install - try absent or present")
+    }
   }
-
 }

@@ -92,4 +92,8 @@ class tomcat::params {
   
   # messsage given on attempt to run on unsupported OS
   $unsupported_os_msg = "This Java module only supports the RedHat OS family"
+
+  # where to download RPMs locally if using using direct download to install 
+  # rpms
+  $local_dir = "/var/cache/tomcat_rpms"
 }

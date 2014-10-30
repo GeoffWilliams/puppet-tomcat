@@ -66,9 +66,9 @@ Files:
 
 ### Setup Requirements
 
-You should have access to a yum repository hosting the apache-tomcat packages
-you wish to install.  A sample .spec file you can use to build an RPM file is
-available [here](https://gist.github.com/GeoffWilliams/4b367b2722d369bbdd4e)
+You should have access to a yum repository or HTTP server hosting the 
+apache-tomcat packages you wish to install.  A sample .spec file you can use 
+to build an RPM file is available [here](https://gist.github.com/GeoffWilliams/4b367b2722d369bbdd4e)
 
 Your system must have Java installed.  Puppet Labs supports a 
 [Java module](https://forge.puppetlabs.com/puppetlabs/java) or if you need to 
@@ -121,6 +121,16 @@ symlink from `/usr/local/apache-tomcat` to `/usr/local/apache-tomcat-7.0.56`
 
 The file at `/usr/local/apache-tomcat-7.0.56` is created by the installation of
 the RPM package.
+
+
+```
+  ::tomcat::install { "myvendor-apache-tomcat-7.0.56-1-1.x86_64.rpm":
+    download_site => "http://myrpms.myvendor.com",
+  }
+```
+
+Download the file `myvendor-apache-tomcat-7.0.56-1-1.x86_64.rpm` from 
+`http://myrpms.myvendor.com` and install it.
 
 ```
   ::tomcat::instance { "main":

@@ -93,4 +93,50 @@ describe 'tomcat::install', :type => :define do
     }
   end
 
+  context "install via staging (defaults)" do
+    let :title do
+      "custom-apache-tomcat-7.0.55-1.rpm"
+    end
+    let :params do
+      {
+        "download_site" => "http://foobar.com",
+      }
+    end
+    it {
+      should contain_file("/var/cache/tomcat_rpms").with(
+        "ensure" => "directory",
+      )
+    }
+    it {
+      should contain_staging__file("custom-apache-tomcat-7.0.55-1.rpm").with(
+        "source" => "http://foobar.com/custom-apache-tomcat-7.0.55-1.rpm",
+        "target" => "/var/cache/tomcat_rpms/custom-apache-tomcat-7.0.55-1.rpm",
+      )
+    }
+  end
+
+  context "install via staging (custom local_dir)" do
+    let :title do
+      "custom-apache-tomcat-7.0.55-1.rpm"
+    end
+    let :params do 
+      {
+        "local_dir" => "/rpms",
+        "download_site" => "http://foobar.com",
+      }
+    end
+    it {
+      should contain_file("/rpms").with(
+        "ensure" => "directory",
+      )
+    }
+    it {
+      should contain_staging__file("custom-apache-tomcat-7.0.55-1.rpm").with(
+        "source" => "http://foobar.com/custom-apache-tomcat-7.0.55-1.rpm",
+        "target" => "/rpms/custom-apache-tomcat-7.0.55-1.rpm",
+      )
+    }
+  end
+
+
 end
