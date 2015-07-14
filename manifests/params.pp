@@ -46,7 +46,8 @@ class tomcat::params {
                           "/${pid_dir}",
                           "/temp",
                           "/work",
-                          "/webapps", ]
+                          "/webapps",
+                          "/conf/Catalina", ]
 
   $file_mode_regular = "0640"
   $file_mode_script = "0750"
