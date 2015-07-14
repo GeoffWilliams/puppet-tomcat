@@ -62,7 +62,7 @@ class tomcat::params {
   
   # major version of tomcat we are setting up (used to load the correct 
   # default templates)
-  $major_version = 7  
+  $major_version = 8  
 
   # validate XML config files before reloading tomcat.  Invalid files will
   # be rejected.  xmllint command comes from libxml2 on redhat

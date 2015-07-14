@@ -342,10 +342,9 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
     7: {
       $template_dir = $tomcat::params::tc7_templates
     }
-    #TODO support for tomcat8 - via a new directory of template files
-    #"8": {
-    #  $template_dir = $tomcat::params::tc8_templates
-    #}
+    8: {
+      $template_dir = $tomcat::params::tc8_templates
+    }
     default: {
       fail("tomcat module doesn't support major version: ${major_version}")
     }
