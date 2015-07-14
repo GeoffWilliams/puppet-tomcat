@@ -138,5 +138,29 @@ describe 'tomcat::install', :type => :define do
     }
   end
 
+  context "install tarball via staging" do
+    let :title do
+      "apache-tomcat-8.0.24.tar.gz"
+    end
+    let :params do
+      {
+        "local_dir"     => "/rpms",
+        "download_site" => "http://apache.mirror.digitalpacific.com.au/tomcat/tomcat-8/v8.0.24/bin",
+        "install_dir"   => "/usr/mylocal",
+      }
+    end
+    it {
+      should contain_staging__file("apache-tomcat-8.0.24.tar.gz").with(
+        "source" => "http://apache.mirror.digitalpacific.com.au/tomcat/tomcat-8/v8.0.24/bin/apache-tomcat-8.0.24.tar.gz"
+      )
+      should contain_staging__extract("apache-tomcat-8.0.24.tar.gz").with(
+        "target"  => "/usr/mylocal",
+        "creates" => "/usr/mylocal/apache-tomcat-8.0.24",
+      )
+      should contain_staging__extract("apache-tomcat-8.0.24.tar.gz").that_requires(
+        "Staging::File[apache-tomcat-8.0.24.tar.gz]"
+      )
+    }
+  end
 
 end

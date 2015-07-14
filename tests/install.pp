@@ -18,3 +18,4 @@ class { "tomcat" : }
 ::tomcat::install { "myorg-apache-tomcat-7.0.56-1-1.x86_64.rpm":
   download_site => "http://172.16.1.101",
 }
+

@@ -96,4 +96,7 @@ class tomcat::params {
   # where to download RPMs locally if using using direct download to install 
   # rpms
   $local_dir = "/var/cache/tomcat_rpms"
+
+  # installation diretory when using tarballs
+  $install_dir = "/usr/local"
 }

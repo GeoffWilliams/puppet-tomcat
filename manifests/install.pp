@@ -48,7 +48,8 @@ define tomcat::install( $ensure = present,
                         $file_owner = $::tomcat::params::file_owner,
                         $file_group = $::tomcat::params::file_group,
                         $download_site = false,
-                        $local_dir = $::tomcat::params::local_dir) {
+                        $local_dir = $::tomcat::params::local_dir,
+                        $install_dir = $::tomcat::params::install_dir) {
   include ::tomcat::params
 
   if (!($::osfamily in $::tomcat::params::supported_os)) {
@@ -88,24 +89,40 @@ define tomcat::install( $ensure = present,
     }
   }
 
-  $rpm_file = $title
-  $local_file = "${local_dir}/${rpm_file}"
-  $rpm_name = regsubst($rpm_file, '\.rpm', '')
-
+  $file_name = $title
+  $local_file = "${local_dir}/${file_name}"
+  $remote_file = "${download_site}/${file_name}"
+  $rpm_name = regsubst($file_name, '\.rpm', '')
+  $tgz_name = regsubst($file_name, '\.tar\.gz', '')
 
   case $ensure {
     present: {
       if ($download_site) {
-        staging::file { $rpm_file:
-          source => "${download_site}/${rpm_file}",
+        staging::file { $file_name:
+          source => $remote_file,
           target => $local_file,
         }
 
-        package { $rpm_name:
-          ensure   => present,
-          provider => "rpm",
-          source   => $local_file,
-          require  => Staging::File[$rpm_file],
+        case $title {
+          /rpm$/: {
+            package { $rpm_name:
+              ensure   => present,
+              provider => "rpm",
+              source   => $local_file,
+              require  => Staging::File[$local_file],
+            }
+          }
+          /\.tar\.gz$/: {
+            staging::extract { $file_name:
+              target  => $install_dir,
+              source  => $local_file,
+              creates => "${install_dir}/${tgz_name}",
+              require => Staging::File[$file_name],
+            }
+          }
+          default: {
+            fail("${module_name} does not support installation of file ${title}")
+          }
         }
       } else {
         package { $rpm_name:
