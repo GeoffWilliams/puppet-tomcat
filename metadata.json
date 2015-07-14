@@ -1,8 +1,8 @@
 {
   "name": "geoffwilliams-tomcat",
-  "version": "0.9.3",
+  "version": "0.10.0",
   "author": "Geoff Williams",
-  "summary": "support for apache-tomcat 7 on RedHat",
+  "summary": "support for apache-tomcat 7 and 8 on RedHat",
   "license": "Apache 2.0",
   "source": "https://github.com/GeoffWilliams/puppet-tomcat",
   "project_page": "https://github.com/GeoffWilliams/puppet-tomcat",
