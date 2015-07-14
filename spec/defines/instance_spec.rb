@@ -186,46 +186,50 @@ describe 'tomcat::instance', :type => :define do
     },
   }
 
-  tests.each do | test_name, test_data | 
-    context test_name do
-      let :pre_condition do
-        test_data.has_key?("pre_condition") ? 
-          test_data["pre_condition"] : $def_pre_condition
-      end
-      let :title do
-        $default_title
-      end
-      let :params do
-        test_data["params"]
-      end
-      it {
-        if test_data.has_key?("subscribe")
-          should contain_service("tomcat_myapp").that_subscribes_to(
-            "File[#{test_data["subscribe"]}]"
-          )
-        elsif test_data.has_key?("no_subscribe")
-          should_not contain_service("tomcat_myapp").that_subscribes_to(
-            "File[#{test_data["no_subscribe"]}]"
-          )
-        else
-          fail("test #{test_name} should supply subscribe/no_subscribe key")
+  [7, 8].each do | major_version|
+    tests.each do | test_name, test_data | 
+      context test_name do
+        let :pre_condition do
+          test_data.has_key?("pre_condition") ? 
+            test_data["pre_condition"] : $def_pre_condition
         end
-
-        # test the built-in files also cause a restart
-        [ "/etc/init.d/tomcat_myapp",
-          "#{$instances}/myapp/bin/setenv.sh",
-          "#{$instances}/myapp/conf/catalina.properties",
-          "#{$instances}/myapp/conf/context.xml",
-          "#{$instances}/myapp/conf/logging.properties",
-          "#{$instances}/myapp/conf/server.xml",
-          "#{$instances}/myapp/conf/tomcat-users.xml",
-          "#{$instances}/myapp/conf/web.xml" ].each do | subscribed_file |
-
-          should contain_service("tomcat_myapp").that_subscribes_to(
-            "File[#{subscribed_file}]"
-          )
+        let :title do
+          $default_title
         end
-      }
+        let :params do
+          test_data["params"].merge({
+            "major_version" => major_version
+          })
+        end
+        it {
+          if test_data.has_key?("subscribe")
+            should contain_service("tomcat_myapp").that_subscribes_to(
+              "File[#{test_data["subscribe"]}]"
+            )
+          elsif test_data.has_key?("no_subscribe")
+            should_not contain_service("tomcat_myapp").that_subscribes_to(
+              "File[#{test_data["no_subscribe"]}]"
+            )
+          else
+            fail("test #{test_name} should supply subscribe/no_subscribe key")
+          end
+
+          # test the built-in files also cause a restart
+          [ "/etc/init.d/tomcat_myapp",
+            "#{$instances}/myapp/bin/setenv.sh",
+            "#{$instances}/myapp/conf/catalina.properties",
+            "#{$instances}/myapp/conf/context.xml",
+            "#{$instances}/myapp/conf/logging.properties",
+            "#{$instances}/myapp/conf/server.xml",
+            "#{$instances}/myapp/conf/tomcat-users.xml",
+            "#{$instances}/myapp/conf/web.xml" ].each do | subscribed_file |
+
+            should contain_service("tomcat_myapp").that_subscribes_to(
+              "File[#{subscribed_file}]"
+            )
+          end
+        }
+      end
     end
   end
 
@@ -886,22 +890,22 @@ describe 'tomcat::instance', :type => :define do
     "1catalina.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{$instances}/myapp/conf/logging.properties",
       "regexp" =>
-        /1catalina\.org\.apache\.juli\.FileHandler\.directory = #{$instances}\/myapp\/logs/,
+        /1.+\.directory = #{$instances}\/myapp\/logs/,
     },
     "2localhost.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{$instances}/myapp/conf/logging.properties", 
       "regexp" => 
-        /2localhost\.org\.apache\.juli\.FileHandler\.directory = #{$instances}\/myapp\/logs/,
+        /2.+\.directory = #{$instances}\/myapp\/logs/,
     },
     "3manager.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{$instances}/myapp/conf/logging.properties",
       "regexp" => 
-        /3manager\.org\.apache\.juli\.FileHandler\.directory = #{$instances}\/myapp\/logs/,
+        /3.+\.directory = #{$instances}\/myapp\/logs/,
     },
     "4host-manager.org.apache.juli.FileHandler.directory (default)" => {
       "file"   => "#{$instances}/myapp/conf/logging.properties",
       "regexp" => 
-        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = #{$instances}\/myapp\/logs/,
+        /4.+\.directory = #{$instances}\/myapp\/logs/,
     },
     "1catalina.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{$instances}/myapp/conf/logging.properties",
@@ -909,7 +913,7 @@ describe 'tomcat::instance', :type => :define do
         "log_dir" => "/foobar",
       },
       "regexp" =>
-        /1catalina\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
+        /1.+\.directory = \/foobar/,
     },
     "2localhost.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{$instances}/myapp/conf/logging.properties",
@@ -917,7 +921,7 @@ describe 'tomcat::instance', :type => :define do
         "log_dir" => "/foobar",
       },
       "regexp" =>
-        /2localhost\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
+        /2.+\.directory = \/foobar/,
     },
     "3manager.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{$instances}/myapp/conf/logging.properties",
@@ -925,7 +929,7 @@ describe 'tomcat::instance', :type => :define do
         "log_dir" => "/foobar",
       },
       "regexp" =>
-        /3manager\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
+        /3.*\.directory = \/foobar/,
     },
     "4host-manager.org.apache.juli.FileHandler.directory (custom)" => {
       "file"   => "#{$instances}/myapp/conf/logging.properties",
@@ -933,7 +937,7 @@ describe 'tomcat::instance', :type => :define do
         "log_dir" => "/foobar",
       },
       "regexp" =>
-        /4host-manager\.org\.apache\.juli\.FileHandler\.directory = \/foobar/,
+        /4.*\.directory = \/foobar/,
     },
 
     #
@@ -942,7 +946,7 @@ describe 'tomcat::instance', :type => :define do
     "common.loader (default)" => {
       "file"   => "#{$instances}/myapp/conf/catalina.properties",
       "regexp" =>
-        /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\/usr\/local\/lib\/tomcat_shared,\/usr\/local\/lib\/tomcat_shared\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
+        /common.loader=.+"?\/usr\/local\/lib\/tomcat_shared\"?,"?\/usr\/local\/lib\/tomcat_shared\/\*\.jar"?,.+/,
     },
     "common.loader (shared_lib_dir off)" => {
       "file"   => "#{$instances}/myapp/conf/catalina.properties",
@@ -950,7 +954,7 @@ describe 'tomcat::instance', :type => :define do
         "shared_lib_dir" => false,
       },
       "regexp" => 
-        /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
+        /common.loader="?\${catalina\.base}\/lib"?,"?\${catalina\.base}\/lib\/\*\.jar"?,"?\${catalina\.home}\/lib"?,"?\${catalina\.home}\/lib\/\*\.jar"?/,
     },
     "common.loader (shared_lib_dir custom)" => {
       "file"   => "#{$instances}/myapp/conf/catalina.properties",
@@ -958,7 +962,7 @@ describe 'tomcat::instance', :type => :define do
         "shared_lib_dir" => "/foobar",
       },
       "regexp" =>
-        /common.loader=\${catalina\.base}\/lib,\${catalina\.base}\/lib\/\*\.jar,\/foobar,\/foobar\/\*\.jar,\${catalina\.home}\/lib,\${catalina\.home}\/lib\/\*\.jar/,
+        /common.loader=.+"?\/foobar"?,"?\/foobar\/\*\.jar"?,.+/,
     },
     "catalina_properties_extra_args (custom)" => {
       "file"   => "#{$instances}/myapp/conf/catalina.properties",

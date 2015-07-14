@@ -15,7 +15,7 @@ class tomcat::params {
   $jmx_access_file = ""
   $unpack_wars = true
   $auto_deploy = true
-  $java_home = "/usr/java/default"
+  $java_home = "/usr/lib/jvm/java"
   $catalina_home = "/usr/local/apache-tomcat"
   $java_opts = ""
   $catalina_opts = ""

@@ -458,7 +458,12 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
     $shared_watched = [
       File[$shared_lib_trigger]
     ]
-    $shared_lib_cfg = "${shared_lib_dir},${shared_lib_dir}/*.jar,"
+    if ($major_version > 7) {
+      # tomcat 8 and above should have path elements quoted
+      $shared_lib_cfg = "\"${shared_lib_dir}\",\"${shared_lib_dir}/*.jar\","
+    } else {
+      $shared_lib_cfg = "${shared_lib_dir},${shared_lib_dir}/*.jar,"
+    }
   } else {
     $shared_watched = []
     $shared_lib_cfg = ""
