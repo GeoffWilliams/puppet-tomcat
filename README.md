@@ -18,7 +18,7 @@
 
 Support for running multiple intances of [apache tomcat](http://tomcat.apache.org/).
 
-Currently supports RedHat boxes and Apache Tomcat 7.x
+Currently supports RedHat boxes and Apache Tomcat 7.x or 8.x
 
 ## Module Description
 
@@ -65,6 +65,8 @@ Files:
 * Symlink to the default tomcat at `/usr/local/apache-tomcat` (configurable)
 
 ### Setup Requirements
+
+*This module requires the future parser*
 
 You should have access to a yum repository or HTTP server hosting the 
 apache-tomcat packages you wish to install.  A sample .spec file you can use 
@@ -138,6 +140,16 @@ Download the file `myvendor-apache-tomcat-7.0.56-1-1.x86_64.rpm` from
     shutdown_port => 8009,
   }
 ```
+
+Download the file `apache-tomcat-8.0.24.tar.gz` from `http://mirror.ventraip.net.au/apache/tomcat/tomcat-8/v8.0.24/bin` and install it to `/usr/local/apache-tomcat-8.0.24`.  After unpacking, symlink `/usr/local/apache-tomcat` back to this directory.
+```
+  ::tomcat::install { "apache-tomcat-8.0.24.tar.gz":
+    ensure         => present,
+    symlink_target => "/usr/local/apache-tomcat-8.0.24",
+    download_site  => "http://mirror.ventraip.net.au/apache/tomcat/tomcat-8/v8.0.24/bin",
+ }
+```
+
 
 Create a tomcat instance called `main` running on port 8080 under the `tomcat`
 user.

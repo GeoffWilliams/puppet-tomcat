@@ -7,6 +7,8 @@
 
 class { "tomcat" : }
 
+
+# install multiple tomcat packages using system package manager
 ::tomcat::install { ["myorg-apache-tomcat-7.0.55", "myorg-apache-tomcat-7.0.56"]: }
 
 # remove a specific version of tomcat
@@ -14,8 +16,9 @@ class { "tomcat" : }
   ensure => absent,
 }
 
-# install an RPM directly
-::tomcat::install { "myorg-apache-tomcat-7.0.56-1-1.x86_64.rpm":
-  download_site => "http://172.16.1.101",
+# install an RPM by attempting direct download.  This allows installation
+# of vendored RPMs for organisations without a working yum repository
+::tomcat::install { "tomcat7-7.0.37-4.el6.noarch.rpm":
+  download_site => "ftp://ftp.pbone.net/mirror/ftp5.gwdg.de/pub/opensuse/repositories/home:/felfert:/CentOS-Utils/CentOS_CentOS-6/noarch",
 }
 

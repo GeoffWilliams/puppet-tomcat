@@ -100,9 +100,8 @@
 #   Non-writable directories and files will be owned by this group
 #
 # [*major_version*]
-#   Identify the major version of tomcat that this instance will be running. 
-#   Eventually this will be used to switch between default configuration file
-#   templates.  For the moment, only 7 (the default) is supported.
+#   Identify the major version of tomcat that this instance will be running.
+#   Currently supports 7 or 8 (as integers)
 #
 # [*shared_lib_dir*]
 #   Location of the directory used for shared Java libraries on this node or

@@ -30,6 +30,9 @@
 #
 # [*local_dir*]
 #   If downloading RPMs manually, files will be saved to this directory
+#
+# [*install_dir*]
+#   If downloading a tarball, unpack files within this directory
 # === Examples
 #
 # see README.md
@@ -61,6 +64,7 @@ define tomcat::install( $ensure = present,
   }
 
   validate_absolute_path($local_dir)
+  validate_absolute_path($install_dir)
 
   File {
     owner => $file_owner,
@@ -109,7 +113,7 @@ define tomcat::install( $ensure = present,
               ensure   => present,
               provider => "rpm",
               source   => $local_file,
-              require  => Staging::File[$local_file],
+              require  => Staging::File[$file_name],
             }
           }
           /\.tar\.gz$/: {
