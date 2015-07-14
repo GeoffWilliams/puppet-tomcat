@@ -16,7 +16,7 @@ describe 'tomcat', :type => :class do
       "custom-apache-tomcat-7.0.55-1-1"
     end
     it {
-      expect { subject }.to raise_error(/only supports the RedHat/)
+      expect { should compile }.to raise_error(/only supports the RedHat/)
     }
   end
 

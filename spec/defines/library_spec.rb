@@ -19,7 +19,7 @@ describe 'tomcat::library', :type => :define do
       $lib_name
     end
     it {
-      expect { subject }.to raise_error(/only supports the RedHat/)
+      expect { should compile }.to raise_error(/only supports the RedHat/)
     }
   end
 

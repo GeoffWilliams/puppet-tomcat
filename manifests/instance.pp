@@ -339,7 +339,7 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   $web_xml = $::tomcat::params::web_xml
 
   case $major_version {
-    "7": {
+    7: {
       $template_dir = $tomcat::params::tc7_templates
     }
     #TODO support for tomcat8 - via a new directory of template files
@@ -502,18 +502,18 @@ define tomcat::instance($service_ensure = $::tomcat::params::service_ensure,
   # within the catalogue.  Test optional ports if set.  Always test mandatory
   # ports
   if ($https_port) {
-    tomcat::port { $https_port: }
+    tomcat::port { "${https_port}": }
   }
   
   if ($jmx_port) {
-    tomcat::port { $jmx_port: }
+    tomcat::port { "${jmx_port}": }
   }
 
   if ($ajp_port) {
-    tomcat::port { $ajp_port: }
+    tomcat::port { "${ajp_port}": }
   }
 
-  tomcat::port{ [$http_port, $shutdown_port]: }
+  tomcat::port{ ["${http_port}", "${shutdown_port}"]: }
   
   File {
     owner => $file_owner,

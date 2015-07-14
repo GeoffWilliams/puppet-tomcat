@@ -16,7 +16,7 @@ describe 'tomcat::port', :type => :define do
       "6666"
     end
     it {
-      expect { subject }.to raise_error(/only supports the RedHat/)
+      expect { should compile }.to raise_error(/only supports the RedHat/)
     }
   end
 
@@ -35,21 +35,12 @@ describe 'tomcat::port', :type => :define do
     it { should compile }
   end
 
-  context "missing value fail" do
-    let :title do
-      ""
-    end
-    it { 
-      expect { subject }.to raise_error(/invalid port/)
-    }
-  end
-
   context "non-numeric fail" do
     let :title do
       "41kda"
     end
     it  {
-      expect { subject }.to raise_error(/invalid port/)
+      expect { should compile }.to raise_error(/invalid port/)
     }
   end
 
@@ -58,7 +49,7 @@ describe 'tomcat::port', :type => :define do
       "0"
     end
     it  {
-      expect { subject }.to raise_error(/invalid port/)
+      expect { should compile }.to raise_error(/invalid port/)
     }
   end
 
@@ -67,7 +58,7 @@ describe 'tomcat::port', :type => :define do
       "65536"
     end
     it  {
-      expect { subject }.to raise_error(/invalid port/)
+      expect { should compile }.to raise_error(/invalid port/)
     }
   end
 

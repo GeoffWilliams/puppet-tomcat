@@ -21,7 +21,7 @@ describe 'tomcat::instance', :type => :define do
       "myapp"
     end
     it {
-      expect { subject }.to raise_error(/only supports the RedHat/)
+      expect { should compile }.to raise_error(/only supports the RedHat/)
     }
   end
 
@@ -244,7 +244,7 @@ describe 'tomcat::instance', :type => :define do
       }
     end
     it {
-      expect { subject }.to raise_error(/module doesn't support major version/)
+      expect { should compile }.to raise_error(/module doesn't support major version/)
     }
   end
 
@@ -577,7 +577,7 @@ describe 'tomcat::instance', :type => :define do
       }
     end
     it {
-      expect { should compile }.to raise_error(Puppet::Error, /Duplicate declaration: Tomcat::Port/)
+      expect { should compile }.to raise_error(/Duplicate declaration: Tomcat::Port/)
     }
   end
     
@@ -1024,7 +1024,7 @@ describe 'tomcat::instance', :type => :define do
         $default_params.merge({param_name => "/not_here"})
       end
       it {
-        expect { subject }.to raise_error(/No such file or directory - \/not_here/)
+        expect { should compile }.to raise_error(/No such file or directory - \/not_here/)
       }
     end
   end
